@@ -2,10 +2,20 @@ import { Routes } from '@angular/router';
 import { Layout } from './layout/layout';
 import { Landing } from './layout/landing/landing';
 import { AllComponentsPage } from './shared/common-components/test-component-page/all-components-page/all-components-page';
+import { managementConsoleRoutes } from './feature/managementConsole/management-console.routes';
 
 export const routes: Routes = [
-
   { path: '', redirectTo: 'landing/home', pathMatch: 'full' },
+
+  
+{
+    path: '',
+    component: Layout,
+    children: [
+      ...managementConsoleRoutes
+    ]
+  },
+
   // { path: 'login', component: Landing },
   {path:'', component: Layout,
     children:[{path:'mx/components', component: AllComponentsPage}]

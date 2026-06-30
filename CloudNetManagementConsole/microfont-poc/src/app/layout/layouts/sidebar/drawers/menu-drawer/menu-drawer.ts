@@ -13,30 +13,61 @@ import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
 import { ThemeService } from '../../../../../shared/services/theme.service';
 import { SidebarService } from '../../../../service/sidebar.service';
+import {APP_ROUTES} from './../../../../../feature/managementConsole/manual-sideber';
+
+
+// interface UserAccessItem {
+//   FunctionId: string;
+//   FunctionName: string;
+//   HOFunctionFlag: string;
+//   AllowMaintAddFlag: string;
+//   AllowMaintEditFlag: string;
+//   AllowMaintDelFlag: string;
+//   AllowMaintViewFlag: string;
+//   AllowMaintAuthFlag: string;
+//   AllowProcessFlag: string;
+//   AllowReportViewFlag: string;
+//   AllowReportPrintFlag: string;
+//   AllowReportGenFlag: string;
+//   AllowAnyOfficeOpsFlag: string;
+//   MenuId: string;
+//   MenuName: string;
+//   ModuleId: string;
+//   ModuleName: string;
+//   AppRoute: string | string[];
+//   routePath: string | string[];
+//   ItemType: string;
+//   QuickRouteNo: string;
+//   IsFinancial: string;
+// }
+
 
 interface UserAccessItem {
+  // ✅ Mandatory fields (4 only)
   FunctionId: string;
   FunctionName: string;
-  HOFunctionFlag: string;
-  AllowMaintAddFlag: string;
-  AllowMaintEditFlag: string;
-  AllowMaintDelFlag: string;
-  AllowMaintViewFlag: string;
-  AllowMaintAuthFlag: string;
-  AllowProcessFlag: string;
-  AllowReportViewFlag: string;
-  AllowReportPrintFlag: string;
-  AllowReportGenFlag: string;
-  AllowAnyOfficeOpsFlag: string;
-  MenuId: string;
-  MenuName: string;
-  ModuleId: string;
-  ModuleName: string;
-  AppRoute: string | string[];
   routePath: string | string[];
-  ItemType: string;
-  QuickRouteNo: string;
-  IsFinancial: string;
+  ModuleName: string;
+
+  // ✅ Optional fields
+  HOFunctionFlag?: string;
+  AllowMaintAddFlag?: string;
+  AllowMaintEditFlag?: string;
+  AllowMaintDelFlag?: string;
+  AllowMaintViewFlag?: string;
+  AllowMaintAuthFlag?: string;
+  AllowProcessFlag?: string;
+  AllowReportViewFlag?: string;
+  AllowReportPrintFlag?: string;
+  AllowReportGenFlag?: string;
+  AllowAnyOfficeOpsFlag?: string;
+  MenuId?: string;
+  MenuName?: string;
+  ModuleId?: string;
+  AppRoute?: string | string[];
+  ItemType?: string;
+  QuickRouteNo?: string;
+  IsFinancial?: string;
 }
 
 @Component({
@@ -114,136 +145,49 @@ export class MenuDrawer implements OnInit {
     //     }
     //   });
 
+
+    
     //------------ testing with dummy data ------------
     if (!resourceListString) {
       this.userAccessList = [];
       return;
     }
 
-    let resourceList = JSON.parse(resourceListString);
-    const dummyData: UserAccessItem[] = resourceList
-      .filter((item: any) => item?.attributes?.functionType != 'R')
-      .sort((a: any, b: any) => {
-        return a.attributes.functionId.localeCompare(b.attributes.functionId);
-      })
-      .map((m: any) => {
-        return {
-          FunctionId: m.attributes.functionId,
-          FunctionName: m.attributes.functionName,
-          HOFunctionFlag: '0',
-          AllowMaintAddFlag: '1',
-          AllowMaintEditFlag: '1',
-          AllowMaintDelFlag: '0',
-          AllowMaintViewFlag: '1',
-          AllowMaintAuthFlag: '1',
-          AllowProcessFlag: '1',
-          AllowReportViewFlag: '1',
-          AllowReportPrintFlag: '1',
-          AllowReportGenFlag: '1',
-          AllowAnyOfficeOpsFlag: '1',
-          ModuleId: m.attributes.moduleId,
-          ModuleName: m.attributes.moduleName,
-          AppRoute: m.uris,
-          routePath: m.routePath,
-          ItemType: 'F',
-          QuickRouteNo: m.attributes.quickRoute,
-          IsFinancial: '0',
-        } as UserAccessItem;
-      });
-    // const dummyData: UserAccessItem[] = [
-    //   {
-    //     FunctionId: 'F001',
-    //     FunctionName: 'Dashboard',
-    //     HOFunctionFlag: '0',
-    //     AllowMaintAddFlag: '1',
-    //     AllowMaintEditFlag: '1',
-    //     AllowMaintDelFlag: '0',
-    //     AllowMaintViewFlag: '1',
-    //     AllowMaintAuthFlag: '1',
-    //     AllowProcessFlag: '1',
-    //     AllowReportViewFlag: '1',
-    //     AllowReportPrintFlag: '1',
-    //     AllowReportGenFlag: '1',
-    //     AllowAnyOfficeOpsFlag: '1',
-    //     MenuId: '01',
-    //     MenuName: 'Operation',
-    //     ModuleId: 'M001',
-    //     ModuleName: 'Main Module',
-    //     AppRoute: '/dashboard',
-    //     ItemType: 'F',
-    //     QuickRouteNo: '10001',
-    //     IsFinancial: '0'
-    //   },
-    //   {
-    //     FunctionId: 'F002',
-    //     FunctionName: 'User Management',
-    //     HOFunctionFlag: '1',
-    //     AllowMaintAddFlag: '1',
-    //     AllowMaintEditFlag: '1',
-    //     AllowMaintDelFlag: '1',
-    //     AllowMaintViewFlag: '1',
-    //     AllowMaintAuthFlag: '1',
-    //     AllowProcessFlag: '1',
-    //     AllowReportViewFlag: '1',
-    //     AllowReportPrintFlag: '1',
-    //     AllowReportGenFlag: '1',
-    //     AllowAnyOfficeOpsFlag: '1',
-    //     MenuId: '02',
-    //     MenuName: 'Operation',
-    //     ModuleId: 'M002',
-    //     ModuleName: 'Admin Module',
-    //     AppRoute: '/mx/components',
-    //     ItemType: 'F',
-    //     QuickRouteNo: '10002',
-    //     IsFinancial: '0'
-    //   },
-    //   {
-    //     FunctionId: 'F003',
-    //     FunctionName: 'Activity Tracker Toggle',
-    //     HOFunctionFlag: '1',
-    //     AllowMaintAddFlag: '1',
-    //     AllowMaintEditFlag: '1',
-    //     AllowMaintDelFlag: '1',
-    //     AllowMaintViewFlag: '1',
-    //     AllowMaintAuthFlag: '1',
-    //     AllowProcessFlag: '1',
-    //     AllowReportViewFlag: '1',
-    //     AllowReportPrintFlag: '1',
-    //     AllowReportGenFlag: '1',
-    //     AllowAnyOfficeOpsFlag: '1',
-    //     MenuId: '03',
-    //     MenuName: 'Configuration',
-    //     ModuleId: 'M003',
-    //     ModuleName: 'User Module',
-    //     AppRoute: '/mx/activity-tracker-toggle',
-    //     ItemType: 'F',
-    //     QuickRouteNo: '10003',
-    //     IsFinancial: '0'
-    //   },
-    //   {
-    //     FunctionId: 'F004',
-    //     FunctionName: 'Form For Notification',
-    //     HOFunctionFlag: '1',
-    //     AllowMaintAddFlag: '1',
-    //     AllowMaintEditFlag: '1',
-    //     AllowMaintDelFlag: '1',
-    //     AllowMaintViewFlag: '1',
-    //     AllowMaintAuthFlag: '1',
-    //     AllowProcessFlag: '1',
-    //     AllowReportViewFlag: '1',
-    //     AllowReportPrintFlag: '1',
-    //     AllowReportGenFlag: '1',
-    //     AllowAnyOfficeOpsFlag: '1',
-    //     MenuId: '04',
-    //     MenuName: 'Configuration',
-    //     ModuleId: 'M004',
-    //     ModuleName: 'Admin Module',
-    //     AppRoute: '/mx/form',
-    //     ItemType: 'F',
-    //     QuickRouteNo: '10004',
-    //     IsFinancial: '0'
-    //   }
-    // ];
+    // let resourceList = JSON.parse(resourceListString);
+    // const dummyData: UserAccessItem[] = resourceList
+    //   .filter((item: any) => item?.attributes?.functionType != 'R')
+    //   .sort((a: any, b: any) => {
+    //     return a.attributes.functionId.localeCompare(b.attributes.functionId);
+    //   })
+    //   .map((m: any) => {
+    //     return {
+    //       FunctionId: m.attributes.functionId,
+    //       FunctionName: m.attributes.functionName,
+    //       HOFunctionFlag: '0',
+    //       AllowMaintAddFlag: '1',
+    //       AllowMaintEditFlag: '1',
+    //       AllowMaintDelFlag: '0',
+    //       AllowMaintViewFlag: '1',
+    //       AllowMaintAuthFlag: '1',
+    //       AllowProcessFlag: '1',
+    //       AllowReportViewFlag: '1',
+    //       AllowReportPrintFlag: '1',
+    //       AllowReportGenFlag: '1',
+    //       AllowAnyOfficeOpsFlag: '1',
+    //       ModuleId: m.attributes.moduleId,
+    //       ModuleName: m.attributes.moduleName,
+    //       AppRoute: m.uris,
+    //       routePath: m.routePath,
+    //       ItemType: 'F',
+    //       QuickRouteNo: m.attributes.quickRoute,
+    //       IsFinancial: '0',
+    //     } as UserAccessItem;
+    //   });
+
+   const dummyData: UserAccessItem[] = [
+  ...APP_ROUTES
+];
+
 
     // Use dummy data instead of API call
     this.isLoading = false;
@@ -263,8 +207,11 @@ export class MenuDrawer implements OnInit {
     this.menuSections = sortedMenuNames.map((name) => ({
       key: name.toLowerCase().replace(/\s+/g, ''),
       label: name,
+      // icon:''
       icon: this.getIcon(name),
     }));
+ 
+
 
     this.groupedMenu = this.userAccessList.reduce(
       (acc: { [key: string]: UserAccessItem[] }, item) => {

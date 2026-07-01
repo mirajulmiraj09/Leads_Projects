@@ -1,0 +1,24 @@
+:host {
+  display: block;
+  min-width: 0;
+  font-family: 'Roboto', Arial, sans-serif;
+}
+
+/*
+  Shared InputTextBox read-only appearance.
+
+  Page-specific CSS শুধু এখানে থাকবে।
+  Global styles.scss touch করা হবে না।
+*/
+:host ::ng-deep input-text-box input[readonly] {
+  cursor: default;
+  color: #0f172a;
+  background-color: #ffffff;
+}
+
+/*
+  Long contact values যেন overflow না করে।
+*/
+:host ::ng-deep input-text-box .custom-input {
+  text-overflow: ellipsis;
+}

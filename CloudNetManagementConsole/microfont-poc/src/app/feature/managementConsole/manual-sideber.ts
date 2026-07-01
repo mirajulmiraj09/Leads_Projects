@@ -17,18 +17,20 @@ export const APP_ROUTES = [
   },
   {
     FunctionId: 'U003',
-    FunctionName: 'News Event',
-    routePath: '/news-event',
+    FunctionName: 'Demo',
+    routePath: '/test3',
     ModuleName: 'Management Console',
-    MenuName: 'New Event',
+    MenuName: 'Demo Section',
+
   },
   {
     FunctionId: 'U004',
-    FunctionName: 'Notification',
-    routePath: '/notification',
+    FunctionName: 'About',
+    routePath: '/about',
     ModuleName: 'Management Console',
-    MenuName: 'Notification',
+    MenuName: 'About Section',
+
   },
 
-  
+
 ];

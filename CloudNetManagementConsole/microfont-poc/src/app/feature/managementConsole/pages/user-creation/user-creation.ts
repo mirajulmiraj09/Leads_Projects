@@ -19,7 +19,7 @@ export class UserCreation {
       saveNext: false,
       update: false,
       updateNext: false,
-      view: false,
+      view: true,
       delete: false,
       exit: false,
       reset: false,
@@ -50,5 +50,13 @@ export class UserCreation {
     // Example validation or API call
 
     alert('✅ Saved Successfully');
+  }
+   view(): void {
+    console.log('✅ view button clicked from UserCreation');
+
+    // ✅ Your logic here
+    // Example validation or API call
+
+    alert('✅viewed Successfully');
   }
 }

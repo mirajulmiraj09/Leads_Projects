@@ -13,6 +13,7 @@ import {provideAnimations} from '@angular/platform-browser/animations';
 import {provideHttpClient, withInterceptors} from '@angular/common/http';
 import {tokenInterceptor} from './TokenInterceptor';
 import { provideAuth } from './core/auth/auth.provider';
+import { managementConsoleTokenInterceptor } from './feature/managementConsole/coreConsole/interceptor/management-console-token-interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -23,8 +24,8 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr(),
     provideHttpClient(
-      withInterceptors([tokenInterceptor])
+      withInterceptors([tokenInterceptor, managementConsoleTokenInterceptor])
     ),
-    provideAuth(),
+   // provideAuth(),
   ]
 };

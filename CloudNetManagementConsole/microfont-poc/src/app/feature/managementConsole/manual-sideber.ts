@@ -16,21 +16,22 @@ export const APP_ROUTES = [
     MenuName: 'User Section',
 
   },
-
   {
-    FunctionId: 'P001',
-    FunctionName: 'Add Product',
-    routePath: '/product/add',
-    ModuleName: 'Management ',
-    MenuName: 'Product Section',
+    FunctionId: 'U003',
+    FunctionName: 'Demo',
+    routePath: '/test3',
+    ModuleName: 'Management Console',
+    MenuName: 'Demo Section',
 
   },
   {
-    FunctionId: 'P002',
-    FunctionName: 'Product List',
-    routePath: '/product/list',
-    ModuleName: 'Management ',
-    MenuName: 'Product Section',
- 
-  }
+    FunctionId: 'U004',
+    FunctionName: 'About',
+    routePath: '/about',
+    ModuleName: 'Management Console',
+    MenuName: 'About Section',
+
+  },
+
+
 ];

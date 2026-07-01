@@ -32,7 +32,8 @@ export const environment = {
   novu_socket: 'http://192.168.10.56:3002',
   novu_api: 'http://192.168.10.56:3000/novu/api',
 
-
+  //management Console
+  managementConsoleApiBaseUrl: 'http://192.168.20.218/CloudNetManagementAPI',
 
 
 };

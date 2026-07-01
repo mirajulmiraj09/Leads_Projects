@@ -2,15 +2,15 @@ import  {Injectable} from '@angular/core';
 import {inject} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs';
-import {environment} from '../../../../../environments/environment';
-import {GlobalResponse,UserPayload} from '../model/globar.model';
-import { NotificationRequest} from '../model/notification.model';
+import {environment} from '../../../../../environments/environment';;
+import { GlobalResponse, UserPayload } from '../model/globar.model';
+
 
 
 @Injectable({
      providedIn: 'root'
 })
-export class NotificationApiService {
+export class ResetPasswordApiService {
     http = inject(HttpClient);
     baseUrl = environment.managementConsoleApiBaseUrl;
 
@@ -25,12 +25,6 @@ export class NotificationApiService {
         return this.http.get<GlobalResponse>(
             `${this.baseUrl}/api/UserManagement/FindUserInformation`,
             { params }
-        );
-    }
-    createNotification(payload: NotificationRequest): Observable<GlobalResponse> {
-        return this.http.post<GlobalResponse>(
-            `${this.baseUrl}/api/CombinedFeatures/CreateNotification`,
-            payload
         );
     }
 

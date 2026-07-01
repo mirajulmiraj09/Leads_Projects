@@ -1,0 +1,14 @@
+<app-expansion-panel-header
+  [isOpenSignal]="isNpsbBankPanelOpen"
+  panelTitle="NPSB Bank List">  
+</app-expansion-panel-header>
+
+<div class="data-table">
+  <generic-data-grid
+    [dataSource]="nspbBankData"
+    [selectedColumns]="['bankCode', 'bankName', 'bankShName', 'isEnabled']"
+    [cellRenderFunctions]="cellRenderFunctions"
+    [uniqueIdField]="'bankCode'"
+  >
+  </generic-data-grid>
+</div>

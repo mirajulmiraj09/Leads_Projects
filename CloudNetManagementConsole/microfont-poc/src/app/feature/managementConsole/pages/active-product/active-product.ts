@@ -1,4 +1,4 @@
-import { Component, signal, OnInit, inject } from '@angular/core';
+import { Component, signal, OnInit, inject, effect } from '@angular/core';
 import { FormGroup, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { InputTextBox } from '../../../../shared/common-components/input-types/input-text-box/input-text-box';
 import { InputSelectOptionField } from '../../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
@@ -8,11 +8,11 @@ import { ActiveProductApiService } from "../../coreConsole/service/active-produc
 import { GlobalResponse } from '../../coreConsole/model/globar.model';
 import { ProductPayload } from '../../coreConsole/model/product.model';
 import { ExpansionPanelHeader } from '../../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-import { BUTTON_VISIBILITY } from '../../../../shared/constant/button-signals.constant';
-
+import { BUTTON_VISIBILITY,ONCLICK_SAVE,ONCLICK_RESET ,ONCLICK_EXIT} from '../../../../shared/constant/button-signals.constant';
 
 @Component({
   selector: 'app-active-products',
+  standalone: true,
   imports: [
     InputTextBox,
     InputSelectOptionField,
@@ -26,25 +26,29 @@ import { BUTTON_VISIBILITY } from '../../../../shared/constant/button-signals.co
 })
 export class ActiveProduct implements OnInit {
 
-  isPanelOpen = signal(false);
+  // ✅ PANEL SIGNALS
   isTransactionPanelOpen = signal(true);
   isProductListOpen = signal(true);
+  isDetailsPanelOpen = signal(true); // ✅ NEW for modal expansion
 
-  // ✅ UI states (NEW - safe to add)
+  // ✅ UI STATES
   isLoading = signal(false);
   hasData = signal(true);
   errorMessage = signal('');
+  onClickSave = ONCLICK_SAVE; // ✅ NEW signal for Save button click
+  onClickReset = ONCLICK_RESET; // ✅ NEW signal for Reset button click
+  onClickExit = ONCLICK_EXIT; // ✅ NEW signal for Exit button click
+
+  // ✅ MODAL STATES
+  productDetailsModalOpen = signal(false);
+  selectedProductDetails: any = null;
 
   private api = inject(ActiveProductApiService);
 
   // ✅ GRID DATA
   filteredProductList: any[] = [];
 
-  // ✅ selected product id for edit
-  selectedProductId: number;
-
-  
-
+  selectedProductId!: number;
 
   // ✅ FORM
   productForm = new FormGroup({
@@ -57,75 +61,95 @@ export class ActiveProduct implements OnInit {
     filterProductType: new FormControl('')
   });
 
-  // ✅ STATIC dropdown (recommended here)
+  // ✅ TYPE OPTIONS
   productTypeOptions = [
     { key: 'CASA', value: 'CASA' },
     { key: 'DPS', value: 'DPS' },
     { key: 'FDR', value: 'FDR' },
   ];
+  constructor() {
+    BUTTON_VISIBILITY.set({
+        save: true,
+        saveNext: false,
+        update: false,
+        updateNext: false,
+        view: false,
+        delete: false,
+        exit: true,
+        reset: true,
+      });
+      effect(()=>{
+        if(this.onClickSave()){
+          this.onSave();
+          this.onClickSave.set(false);
+        } 
+      });
+      effect(()=>{
+        if(this.onClickReset()){
+          this.productForm.reset();
+          this.onClickReset.set(false);
+        }
+      });
+      effect(()=>{
+        if(this.onClickExit()){
+          this.onExit();
+          this.onClickExit.set(false);
+        }
+      });
+
+  }
+
   ngOnInit() {
 
-     BUTTON_VISIBILITY.set({
-          save: true,
-          saveNext: false,
-          update: false,
-          updateNext: false,
-          view: false,
-          delete: false,
-          exit: true,
-          reset: true,
-        });
+    this.loadProducts(0);
 
-  this.loadProducts(0); // ✅ NEW default load
+    this.productForm.get('filterProductType')?.valueChanges.subscribe(value => {
+      this.loadProducts(this.getTypeId(value));
+    });
+  }
+  
 
-  this.productForm.get('filterProductType')?.valueChanges.subscribe(value => {
-    const typeId = this.getTypeId(value);
-    this.loadProducts(typeId);
-  });
-}
-
-  // ✅ LOAD PRODUCTS FROM API
+  // ✅ LOAD DATA
   loadProducts(typeId: number) {
 
-    this.isLoading.set(true);         // ✅ NEW
-    this.hasData.set(true);           // ✅ NEW
-    this.errorMessage.set('');        // ✅ NEW
+    this.isLoading.set(true);
+    this.hasData.set(true);
+    this.errorMessage.set('');
 
     this.api.getActiveProductsList(typeId).subscribe({
       next: (res: GlobalResponse) => {
 
-        this.isLoading.set(false);    // ✅ NEW
+        this.isLoading.set(false);
 
         if (res.Status?.toUpperCase() === 'OK') {
 
           const result = res.Result || [];
 
-          // ✅ NEW (Data check)
           if (!result.length) {
             this.filteredProductList = [];
             this.hasData.set(false);
             return;
           }
 
-          // ✅ YOUR EXISTING LOGIC (UNCHANGED)
+          // ✅ IMPORTANT FIX (keep original API object)
           this.filteredProductList = result.map((item: any) => ({
             productId: item.productid,
             productName: item.title,
-            productCode: item.productcode?.toString() || '',
+            productCode: item.productcode?.toString(),
             productType: this.mapType(item.typeid),
             webUrl: item.weburl || '',
             description: item.shortdesc,
-            details: item.longdesc
+            details: item.longdesc,
+
+            // ✅ keep full object (VERY IMPORTANT)
+            originalData: item
           }));
 
         } else {
-          console.error(res.Message);
-          this.hasData.set(false);            // ✅ NEW
-          this.errorMessage.set(res.Message || 'Error'); // ✅ NEW
+          this.hasData.set(false);
+          this.errorMessage.set(res.Message || 'Error');
         }
       },
-
-      // ✅ NEW (Error handling)
       error: () => {
         this.isLoading.set(false);
         this.hasData.set(false);
@@ -133,15 +157,15 @@ export class ActiveProduct implements OnInit {
       }
     });
   }
+
   // ✅ TYPE MAP
   mapType(typeId: number): string {
     if (typeId === 1002) return 'CASA';
     if (typeId === 1003) return 'DPS';
     if (typeId === 1004) return 'FDR';
-    return '';
+    return '-';
   }
 
-  // ✅ REVERSE TYPE
   getTypeId(type: string | null | undefined): number {
     if (type === 'CASA') return 1002;
     if (type === 'DPS') return 1003;
@@ -149,29 +173,25 @@ export class ActiveProduct implements OnInit {
     return 0;
   }
 
+  getTypeName(typeId: number): string {
+    return this.mapType(typeId);
+  }
+
   // ✅ EDIT
   onEdit(event: any) {
-
     const row = typeof event === 'string' ? JSON.parse(event) : event;
 
     this.selectedProductId = Number(row.productId);
 
-    this.productForm.patchValue({
-      productName: row.productName,
-      productCode: row.productCode,
-      productType: row.productType,
-      webUrl: row.webUrl,
-      description: row.description,
-      details: row.details
-    });
+    this.productForm.patchValue(row);
   }
 
-  // ✅ DELETE (UI only)
-  onDelete(product: any): void {
+  // ✅ DELETE
+  onDelete(event: any) {
 
-    const row = typeof product === 'string' ? JSON.parse(product) : product;
+    const row = typeof event === 'string' ? JSON.parse(event) : event;
 
-    if (confirm(`Are you sure you want to delete "${row.productName}"?`)) {
+    if (confirm(`Delete "${row.productName}" ?`)) {
 
       const payload: ProductPayload = {
         Productid: Number(row.productId),
@@ -184,27 +204,39 @@ export class ActiveProduct implements OnInit {
         Remark: 'Delete',
         changeType: 'DEL'
       };
-      this.api.saveProduct(payload).subscribe({
-        next: () => {
-          this.loadProducts(this.getTypeId(row.productType));
-        }
+
+      this.api.saveProduct(payload).subscribe(() => {
+        this.loadProducts(this.getTypeId(row.productType));
       });
     }
-
   }
 
-  // ✅ ✅ ✅ MAIN LOGIC (ADD + EDIT in one)
-  onSave() {
+  // ✅ ✅ DETAILS (FINAL FIX)
+  onDetails(event: any) {
 
-    if (this.productForm.invalid) {
-      alert('Form invalid ❌');
-      return;
-    }
+    const row = typeof event === 'string' ? JSON.parse(event) : event;
+
+    // ✅ GET FULL API OBJECT
+    this.selectedProductDetails = row.originalData;
+
+    // ✅ OPEN MODAL
+    this.productDetailsModalOpen.set(true);
+  }
+
+  closeModal() {
+    this.productDetailsModalOpen.set(false);
+    this.selectedProductDetails = null;
+  }
+
+  // ✅ SAVE
+  onSave() {
+    alert('Save button clicked!');
+    if (this.productForm.invalid) return;
 
     const formValue = this.productForm.value;
 
     const payload: ProductPayload = {
-      Productid: this.selectedProductId,
+      Productid: this.selectedProductId || 0,
       Title: formValue.productName || '',
       Shortdesc: formValue.description || '',
       Longdesc: formValue.details || '',
@@ -215,14 +247,14 @@ export class ActiveProduct implements OnInit {
       changeType: 'EDT'
     };
 
-    this.api.saveProduct(payload).subscribe({
-      next: () => {
-        this.loadProducts(this.getTypeId(formValue.productType));
-        this.productForm.reset();
-      },
-      error: (err) => console.error(err)
+    this.api.saveProduct(payload).subscribe(() => {
+      this.loadProducts(this.getTypeId(formValue.productType));
+      this.productForm.reset();
     });
   }
-
+  
+ onExit() {
+  window.history.back();
+}
 
 }

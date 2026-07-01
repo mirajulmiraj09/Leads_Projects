@@ -1,4 +1,4 @@
-import { Component, signal,OnInit } from '@angular/core';
+import { Component, signal,OnInit,effect } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { InputTextBox } from '../../../../shared/common-components/input-types/input-text-box/input-text-box';
 import { InputTextArea } from '../../../../shared/common-components/input-types/input-text-area/input-text-area';
@@ -10,7 +10,7 @@ import { NotificationApiService } from '../../coreConsole/service/notification.s
 import { inject } from '@angular/core';
 import { UserPayload } from '../../coreConsole/model/globar.model';
 import { ExpansionPanelHeader } from '../../../../shared/common-components/expansion-panel-header/expansion-panel-header';
-
+import { BUTTON_VISIBILITY ,ONCLICK_SAVE} from '../../../../shared/constant/button-signals.constant';
 @Component({
   selector: 'app-notification',
   standalone: true,
@@ -26,6 +26,7 @@ import { ExpansionPanelHeader } from '../../../../shared/common-components/expan
   styleUrl: './notification.scss'
 })
 export class Notification implements OnInit {
+  onClickSave = ONCLICK_SAVE;
 
   isNotificationListOpen = signal(true);
 
@@ -45,6 +46,19 @@ export class Notification implements OnInit {
     searchValue: new FormControl('')
   });
 
+  constructor() {
+    BUTTON_VISIBILITY.set({
+      save: true,
+    });
+    effect(() => {
+      if (ONCLICK_SAVE()) {
+        console.log('✅ Save signal received in Notification component');
+        this.onSave();
+        ONCLICK_SAVE.set(false);
+      }
+    });
+
+  }
   ngOnInit() {
     this.notificationForm.get('BroadcastType')?.valueChanges.subscribe(value => {
 
@@ -129,6 +143,10 @@ export class Notification implements OnInit {
       next: (response) => {
         console.log('✅ Notification created successfully:', response); 
         alert('Notification created successfully!');
+        this.notificationForm.reset();
+        this.searchForm.reset();
+        this.userInfoFlag = false;
+        this.userInfo = null;
       },
       error: (error) => {
         console.error('❌ Error creating notification:', error);

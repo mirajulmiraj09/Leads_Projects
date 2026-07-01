@@ -1,94 +1,94 @@
 <div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 space-y-3">
-
   <!-- ========================= -->
-  <!-- ✅ Expansion Panel 1 -->
+  <!-- ✅ FORM PANEL -->
   <!-- ========================= -->
   <div class="w-full">
-
     <app-expansion-panel-header
       [isOpenSignal]="isTransactionPanelOpen"
-      panelTitle="Transaction Management">
+      panelTitle="Transaction Management"
+    >
     </app-expansion-panel-header>
 
     @if (isTransactionPanelOpen()) {
-      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1">
-        <div [formGroup]="productForm" class="space-y-1">
-
-          <!-- Row 1 -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
-            <input-text-box class="w-full"
+      <div class="bg-white rounded-xl shadow-sm p-3 mt-1">
+        <div [formGroup]="productForm" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            <input-text-box
               [frmGroup]="productForm"
               controlName="productName"
-              label="Product Name">
+              label="Product Name"
+            >
             </input-text-box>
 
-            <input-text-box class="w-full"
+            <input-text-box
               [frmGroup]="productForm"
               controlName="productCode"
-              label="Product Code">
+              label="Product Code"
+            >
             </input-text-box>
 
-            <input-select-option-field class="w-full"
+            <input-select-option-field
               [frmGroup]="productForm"
               controlName="productType"
               [options]="productTypeOptions"
-              label="Product Type">
+              label="Product Type"
+            >
             </input-select-option-field>
 
-            <input-text-box class="w-full"
+            <input-text-box
               [frmGroup]="productForm"
               controlName="webUrl"
-              label="Web URL">
+              label="Web URL"
+            >
             </input-text-box>
           </div>
 
-          <!-- Row 2 -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <input-text-area class="w-full"
+            <input-text-area
               [frmGroup]="productForm"
               controlName="description"
-              label="Description">
+              label="Description"
+            >
             </input-text-area>
 
-            <input-text-area class="w-full"
+            <input-text-area
               [frmGroup]="productForm"
               controlName="details"
-              label="Details">
+              label="Details"
+            >
             </input-text-area>
           </div>
-
         </div>
       </div>
     }
-
   </div>
 
   <!-- ========================= -->
-  <!-- ✅ Expansion Panel 2 -->
+  <!-- ✅ PRODUCT LIST PANEL -->
   <!-- ========================= -->
   <div class="w-full">
-
     <app-expansion-panel-header
       [isOpenSignal]="isProductListOpen"
-      panelTitle="Active Product List">
+      panelTitle="Active Product List"
+    >
     </app-expansion-panel-header>
 
     @if (isProductListOpen()) {
-      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1 space-y-2">
-
+      <div class="bg-white rounded-xl shadow-sm p-3 mt-1">
         <!-- Filter -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-          <input-select-option-field class="w-full"
+        <div class="w-full sm:w-[220px] md:w-[200px] lg:w-[180px]">
+          <input-select-option-field
+            class="w-full"
             [frmGroup]="productForm"
             controlName="filterProductType"
             label="Filter by Product Type"
-            [options]="productTypeOptions">
+            [options]="productTypeOptions"
+          >
           </input-select-option-field>
         </div>
 
-        <!-- ✅ GRID + STATES -->
-        <div class="w-full border rounded-lg overflow-hidden">
-
+        <!-- GRID SECTION -->
+        <div class="border rounded-lg">
           <!-- Loading -->
           @if (isLoading()) {
             <div class="p-4 text-center text-gray-500 animate-pulse">
@@ -103,36 +103,144 @@
             </div>
           }
 
-          <!-- No Data -->
-          @if (!isLoading() && !errorMessage() && !hasData()) {
-            <div class="p-6 text-center text-gray-400 flex flex-col items-center gap-2">
-              <span class="text-3xl">📭</span>
-              <p>No Data Found</p>
-            </div>
-          }
-
-          <!-- Data Grid -->
-          @if (!isLoading() && hasData()) {
+          <!-- ✅ ALWAYS SHOW GRID -->
+          @if (!isLoading() && !errorMessage()) {
             <div class="overflow-x-auto">
               <generic-data-grid
-                class="min-w-[500px]"
-                [dataSource]="filteredProductList"
+                class="min-w-[600px]"
+                [dataSource]="filteredProductList || []"
+                [selectedColumns]="[
+                  'productCode',
+                  'productType',
+                  'productName',
+                  'description',
+                  'webUrl',
+                  'rating',
+                ]"
+                [customColumnNames]="{
+                  productCode: 'Product Code',
+                  productType: 'Type Name',
+                  productName: 'Title',
+                  description: 'Description',
+                  webUrl: 'Web URL',
+                  rating: 'Rating',
+                }"
                 [showEditButton]="true"
                 [showDeleteButton]="true"
+                [showViewButton]="true"
                 [useInlineEdit]="false"
-                [selectedColumns]="['productName', 'productCode']"
+                [searchEnabled]="true"
                 [uniqueIdField]="'productCode'"
                 (onFHEditClick)="onEdit($event)"
-                (onFHDeleteClick)="onDelete($event)">
+                (onFHDeleteClick)="onDelete($event)"
+                (onFHViewClick)="onDetails($event)"
+              >
               </generic-data-grid>
             </div>
           }
-
         </div>
-
       </div>
     }
-
   </div>
-
 </div>
+
+<!-- ========================= -->
+<!-- ✅ PRODUCT DETAILS MODAL -->
+<!-- ========================= -->
+@if (productDetailsModalOpen()) {
+  <div class="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div class="w-full max-w-3xl bg-white rounded-xl shadow-xl overflow-hidden">
+      <!-- Header -->
+      <div
+        class="flex justify-between items-center px-6 py-4 bg-blue-600 text-white"
+      >
+        <h2 class="font-semibold">Product Details</h2>
+        <button (click)="closeModal()" class="bg-red-500 px-4 py-1 rounded">
+          Close
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="p-5 space-y-5 bg-gray-50">
+        <!-- ✅ Details -->
+        <app-expansion-panel-header
+          [isOpenSignal]="isDetailsPanelOpen"
+          panelTitle="Product Information"
+        >
+        </app-expansion-panel-header>
+
+        @if (isDetailsPanelOpen()) {
+          <div class="bg-white border rounded-lg p-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+              <div class="flex justify-between">
+                <span>Type Name</span>
+                <span>{{ getTypeName(selectedProductDetails?.typeid) }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Title</span>
+                <span>{{ selectedProductDetails?.title }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Description</span>
+                <span>{{ selectedProductDetails?.shortdesc }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Detail</span>
+                <span>{{ selectedProductDetails?.longdesc }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Web URL</span>
+                <span>{{ selectedProductDetails?.weburl || "-" }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Product Code</span>
+                <span class="font-semibold">
+                  {{ selectedProductDetails?.productcode }}
+                </span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Rating</span>
+                <span>⭐ {{ selectedProductDetails?.rating }}</span>
+              </div>
+
+              <div class="flex justify-between">
+                <span>Type ID</span>
+                <span>{{ selectedProductDetails?.typeid }}</span>
+              </div>
+            </div>
+          </div>
+        }
+
+        <!-- ✅ Reviews -->
+        <app-expansion-panel-header
+          [isOpenSignal]="isDetailsPanelOpen"
+          panelTitle="Product Reviews"
+        >
+        </app-expansion-panel-header>
+
+        <div class="bg-white border rounded-lg p-2">
+          <generic-data-grid
+            [dataSource]="selectedProductDetails?.reviewDetails || []"
+            [selectedColumns]="['userName', 'rating', 'comment']"
+            [customColumnNames]="{
+              userName: 'User Name',
+              rating: 'Rating',
+              comment: 'Comment',
+            }"
+            [showEditButton]="false"
+            [showDeleteButton]="false"
+            [showViewButton]="false"
+            [uniqueIdField]="'userName'"
+          >
+          </generic-data-grid>
+        </div>
+      </div>
+    </div>
+  </div>
+}

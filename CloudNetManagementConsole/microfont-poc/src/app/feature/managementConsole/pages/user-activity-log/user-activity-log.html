@@ -1,0 +1,100 @@
+<div class="max-w-7xl mx-auto p-4 space-y-5">
+    <app-expansion-panel-header
+      [isOpenSignal]="isActivityPanelOpen"
+      panelTitle="User Activity Log">
+    </app-expansion-panel-header>
+
+  <!-- ================= FILTER SECTION ================= -->
+  <div class="bg-white rounded-xl shadow-sm border p-4">
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <!-- ✅ User Type -->
+      <input-select-option-field
+        class="w-full"
+        [frmGroup]="formGroup"
+        controlName="userType"
+        label="User Type"
+        [options]="userTypeOptions">
+      </input-select-option-field>
+
+      <!-- ✅ User ID -->
+      <input-text-box
+        class="w-full"
+        [frmGroup]="formGroup"
+        controlName="userId"
+        label="User ID">
+      </input-text-box>
+
+      <!-- ✅ Start Date -->
+      <input-date
+        class="w-full"
+        [frmGroup]="formGroup"
+        controlName="startDate"
+        label="Start Date">
+      </input-date>
+
+      <!-- ✅ End Date -->
+      <input-date
+        class="w-full"
+        [frmGroup]="formGroup"
+        controlName="endDate"
+        label="End Date">
+      </input-date>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= TITLE ================= -->
+ <app-expansion-panel-header
+      [isOpenSignal]="isActivityDetailsPanel"
+      panelTitle="Activity Details">
+</app-expansion-panel-header>
+
+
+
+  <!-- ================= DATA GRID ================= -->
+  <div class="bg-white rounded-xl shadow-sm border p-3">
+
+    <div class="overflow-x-auto">
+
+      <generic-data-grid
+        class="min-w-[700px]"
+
+        [id]="'activityGrid'"
+        [dataSource]="data || []"
+
+        [selectedColumns]="[
+          'activityAt',
+          'userName',
+          'activityType',
+          'comment'
+        ]"
+
+        [customColumnNames]="{
+          activityAt: 'Activity Time',
+          userName: 'User Name',
+          activityType: 'Activity Type',
+          comment: 'Comment'
+        }"
+
+        [initPageSize]="5"
+        [pageSizeOptions]="[5,10,25,50]"
+        [backendPaginationEnabled]="false"
+
+        [enableSelection]="true"
+        [uniqueIdField]="'id'"
+
+        [gridTitle]="'Activity Details'"
+
+        (onDataGridStateChange)="onGridStateChange($event)"
+        (onRowDoubleClick)="onRowDoubleClick($event)">
+      </generic-data-grid>
+
+    </div>
+
+  </div>
+
+</div>

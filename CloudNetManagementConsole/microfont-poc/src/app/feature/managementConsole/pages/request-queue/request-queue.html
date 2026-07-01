@@ -1,0 +1,130 @@
+<div class="max-w-7xl mx-auto p-4 space-y-4">
+
+  <!-- ================= FILTER PANEL ================= -->
+  <app-expansion-panel-header
+    [isOpenSignal]="isRequestPanelOpen"
+    panelTitle="Request Queue Filter">
+  </app-expansion-panel-header>
+
+  @if (isRequestPanelOpen()) {
+
+    <div class="bg-white rounded-xl shadow-sm border p-4 mt-1 space-y-4">
+
+      <!-- ✅ ROW 1 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <input-text-box
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="userId"
+          label="User ID">
+        </input-text-box>
+
+        <input-select-option-field
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="branchName"
+          label="Branch Name"
+          [options]="branchOptions">
+        </input-select-option-field>
+
+        <input-select-option-field
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="requestType"
+          label="Request Type"
+          [options]="requestTypeOptions">
+        </input-select-option-field>
+
+        <input-select-option-field
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="status"
+          label="Status"
+          [options]="statusOptions">
+        </input-select-option-field>
+
+      </div>
+
+      <!-- ✅ ROW 2 -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+
+        <input-date
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="startDate"
+          label="Start Date">
+        </input-date>
+
+        <input-date
+          class="w-full"
+          [frmGroup]="requestForm"
+          controlName="endDate"
+          label="End Date">
+        </input-date>
+
+        <!-- Button -->
+        <div>
+          <button
+            class="h-[42px] px-5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition w-full sm:w-auto"
+            (click)="getRequestQueue()">
+            Get Request Queue
+          </button>
+        </div>
+
+      </div>
+
+    </div>
+
+  }
+
+  <!-- ================= GRID PANEL ================= -->
+  <app-expansion-panel-header
+    [isOpenSignal]="isRequestGridOpen"
+    panelTitle="Request Queue Details">
+  </app-expansion-panel-header>
+
+  @if (isRequestGridOpen()) {
+
+    <div class="bg-white rounded-xl shadow-sm border p-3 mt-1">
+
+      <div class="overflow-x-auto">
+
+        <generic-data-grid
+          class="min-w-[800px]"
+
+          [dataSource]="requestQueueData || []"
+
+          [selectedColumns]="[
+            'userId',
+            'branchName',
+            'requestType',
+            'status'
+          ]"
+
+          [customColumnNames]="{
+            userId: 'User ID',
+            branchName: 'Branch Name',
+            requestType: 'Request Type',
+            status: 'Status'
+          }"
+
+          [showEditButton]="true"
+          [showDeleteButton]="true"
+          [useInlineEdit]="false"
+
+          [enableSelection]="true"
+
+          [uniqueIdField]="'userId'"
+
+          (onCellButtonClick)="onEdit($event)"
+          (onFHEditClick)="onClear($event)">
+        </generic-data-grid>
+
+      </div>
+
+    </div>
+
+  }
+
+</div>

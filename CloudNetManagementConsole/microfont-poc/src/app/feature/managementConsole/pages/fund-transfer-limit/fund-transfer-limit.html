@@ -1,0 +1,259 @@
+<div class="max-w-7xl  mx-auto p-4 space-y-4">
+
+  <!-- ================= TAB HEADER ================= -->
+  <div class="flex bg-primary-400 rounded-lg p-1">
+
+    <button
+      class="flex-1 py-2 text-sm rounded-md transition"
+      [ngClass]="all ? 'bg-blue-600 text-white' : 'text-primary-100 hover:bg-gray-200'"
+      (click)="onTabChange('all')">
+      All Internal Users
+    </button>
+
+    <button
+      class="flex-1 py-2 text-sm rounded-md transition"
+      [ngClass]="individual ? 'bg-blue-600 text-white' : 'text-primary-100 hover:bg-gray-200'"
+      (click)="onTabChange('individual')">
+      Individual Internal User
+    </button>
+
+    <button
+      class="flex-1 py-2 text-sm rounded-md transition"
+      [ngClass]="global ? 'bg-blue-600 text-white' : 'text-primary-100 hover:bg-gray-200'"
+      (click)="onTabChange('global')">
+      All Global Users
+    </button>
+
+  </div>
+
+
+  <!-- ================= ALL USERS ================= -->
+  <div *ngIf="all" class="bg-white rounded-xl shadow p-4 space-y-4">
+
+    <!-- Transfer Type -->
+    <div class="max-w-xs">
+      <input-select-option-field
+        [frmGroup]="formGroupAllTab"
+        controlName="transferType"
+        label="Select Transfer Type"
+        [options]="transferTypeOptions">
+      </input-select-option-field>
+    </div>
+
+    <!-- Inputs -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+      <input-text-box
+        [frmGroup]="formGroupAllTab"
+        controlName="allMinAmount"
+        label="Min Amount Per Transaction">
+      </input-text-box>
+
+      <input-text-box
+        [frmGroup]="formGroupAllTab"
+        controlName="allMaxAmount"
+        label="Max Amount Per Transaction">
+      </input-text-box>
+
+      <input-text-box
+        [frmGroup]="formGroupAllTab"
+        controlName="allDailyAmount"
+        label="Max Amount Per Day">
+      </input-text-box>
+
+      <input-text-box
+        [frmGroup]="formGroupAllTab"
+        controlName="allTxnCount"
+        label="Max Transactions Per Day">
+      </input-text-box>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= INDIVIDUAL ================= -->
+  <div *ngIf="individual" class="space-y-4">
+
+    <!-- Search Card -->
+    <div class="bg-white rounded-xl shadow p-4">
+
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+
+        <input-select-option-field
+          [frmGroup]="searchTab"
+          controlName="searchType"
+          label="Search Type"
+          [options]="searchOptions">
+        </input-select-option-field>
+
+        <input-text-box
+          class="md:col-span-2"
+          [frmGroup]="searchTab"
+          controlName="searchValue"
+          [label]="searchLabel">
+        </input-text-box>
+
+        <button
+          class="h-[42px] bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          (click)="onSearch()">
+          Search
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Result Form -->
+    <div *ngIf="showIndividualForm" class="bg-white rounded-xl shadow p-4 space-y-4">
+
+      <!-- Transfer -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+
+        <input-select-option-field
+          [frmGroup]="formGroupIndividualTab"
+          controlName="transferType"
+          label="Transfer Type">
+        </input-select-option-field>
+
+      </div>
+
+      <!-- Inputs -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+
+        <input-text-box
+          [frmGroup]="formGroupIndividualTab"
+          controlName="userId"
+          label="User ID"
+          [isReadonly]="true">
+        </input-text-box>
+
+        <input-text-box
+          [frmGroup]="formGroupIndividualTab"
+          controlName="maxAmountPerTrans"
+          label="Max Amount/Transaction">
+        </input-text-box>
+
+        <input-text-box
+          [frmGroup]="formGroupIndividualTab"
+          controlName="maxAmountTransPerDay"
+          label="Max Amount/Day">
+        </input-text-box>
+
+        <input-text-box
+          [frmGroup]="formGroupIndividualTab"
+          controlName="maxNumOfTransPerDay"
+          label="Max Transactions/Day">
+        </input-text-box>
+
+      </div>
+
+      <div class="max-w-sm">
+        <input-text-box
+          [frmGroup]="formGroupIndividualTab"
+          controlName="minAmountPerTrans"
+          label="Min Amount">
+        </input-text-box>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ================= GLOBAL ================= -->
+  <div *ngIf="global" class="space-y-4">
+
+    <!-- TOP GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+      <!-- Individual Client -->
+      <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h3 class="font-semibold text-gray-700">Individual Client</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="inD_TRANS_PER_DAY" label="Transactions/Day"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="inD_TRANS_AMT_PER_DAY" label="Amount/Day"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="inD_AMT_PER_TRANS" label="Amount/Transaction"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="inD_AMOUNT_PER_TRANS_MIN" label="Min Amount"></input-text-box>
+
+          <input-text-box class="md:col-span-2" [frmGroup]="formGroupConfig" controlName="inD_GLOBAL_MAX_LIMIT" label="Global Max"></input-text-box>
+
+        </div>
+      </div>
+
+      <!-- Corporate Client -->
+      <div class="bg-white rounded-xl shadow p-4 space-y-3">
+        <h3 class="font-semibold text-gray-700">Corporate Client</h3>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="corP_TRANS_PER_DAY" label="Transactions/Day"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="corP_TRANS_AMT_DAY" label="Amount/Day"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="corP_AMT_PER_TRANS" label="Amount/Transaction"></input-text-box>
+
+          <input-text-box [frmGroup]="formGroupConfig" controlName="corP_AMOUNT_PER_TRANS_MIN" label="Min Amount"></input-text-box>
+
+          <input-text-box class="md:col-span-2" [frmGroup]="formGroupConfig" controlName="corP_GLOBAL_MAX_LIMIT" label="Global Max"></input-text-box>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Account & Charge -->
+    <div class="bg-white rounded-xl shadow p-4 space-y-3">
+
+      <h3 class="font-semibold text-gray-700">Account & Charge</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+
+        <!-- Checkbox -->
+        <label class="flex items-center gap-2">
+          <input type="checkbox" formControlName="fT_ENABLE_FLAG">
+          Enable Fund Transfer Rule
+        </label>
+
+        <input-select-option-field
+          [frmGroup]="formGroupConfig"
+          controlName="pB_BRANCH_ID"
+          label="Principal Branch"
+          [options]="principalBranchOptions">
+        </input-select-option-field>
+
+        <label class="flex items-center gap-2">
+          <input type="checkbox" formControlName="iS_CHARGE_APPLICABLE_TO_PB">
+          Charge Applicable
+        </label>
+
+        <input-text-box [frmGroup]="formGroupConfig" controlName="otheR_BANK_BEFT_ACC_NO" label="BEFT Account"></input-text-box>
+
+        <input-select-option-field [frmGroup]="formGroupConfig" controlName="otheR_BANK_BEFT_BRANCH_ID" label="BEFT Branch" [options]="principalBranchOptions"></input-select-option-field>
+
+        <input-select-option-field [frmGroup]="formGroupConfig" controlName="otheR_BANK_NPSB_BR_ID" label="NPSB Branch" [options]="principalBranchOptions"></input-select-option-field>
+
+        <input-text-box [frmGroup]="formGroupConfig" controlName="otheR_BANK_NPSB_ACC_NO" label="NPSB Account"></input-text-box>
+
+        <input-text-box [frmGroup]="formGroupConfig" controlName="otheR_BANK_Q_CASH_NPSB_ACC_NO" label="Q-Cash Account"></input-text-box>
+
+        <input-select-option-field [frmGroup]="formGroupConfig" controlName="otheR_BANK_Q_CASH_NPSB_BR_ID" label="Q-Cash Branch" [options]="principalBranchOptions"></input-select-option-field>
+
+        <input-select-option-field [frmGroup]="formGroupConfig" controlName="otheR_BANK_BB_EFT_HEAD" label="BB EFT Head" [options]="principalBranchOptions"></input-select-option-field>
+
+        <input-text-box [frmGroup]="formGroupConfig" controlName="q_CASH_CHARGE_RULE_ID" label="Q-Cash Rule"></input-text-box>
+
+        <input-text-box class="md:col-span-2" [frmGroup]="formGroupConfig" controlName="chargE_RULE_ID" label="EFT/NPSB Rule"></input-text-box>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

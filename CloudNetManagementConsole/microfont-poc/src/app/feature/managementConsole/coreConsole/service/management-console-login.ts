@@ -259,14 +259,14 @@ export class ManagementConsoleLogin {
     }
 
     const expiresIn =
-      loginResult.ExpiresIn ?? loginResult.expiresIn;
+      loginResult.ExpiresIn ?? loginResult.expires_in;
 
     if (
       typeof expiresIn === 'number' &&
       Number.isFinite(expiresIn) &&
       expiresIn > 0
     ) {
-      return Date.now() + expiresIn * 1000;
+      return Date.now() + expiresIn ;
     }
 
     const tokenExpiry =

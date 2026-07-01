@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { inject } from '@angular/core';
+import { environment } from '../../../../../environments/environment';
 
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -13,7 +14,7 @@ import { GlobalResponse } from '../model/globar.model';
   providedIn: 'root'
 })
 export class ActiveProductApiService {
-  private baseUrl = 'http://localhost:5000'; // Replace with your actual API base URL
+  private baseUrl = environment.managementConsoleApiBaseUrl; // Replace with your actual API base URL
   http = inject(HttpClient);
   productConstant = new ProductConstant();
   

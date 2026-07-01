@@ -44,7 +44,7 @@
   import { MonthYearPickerComponent } from '../../input-types/month-year-picker/month-year-picker';
   import * as XLSX from 'xlsx';
 import { InputTime } from '../../input-types/input-time/input-time';
-  // Types for data selection modal
+  // Types for data selection modaleffec
   export interface AccountData {
     id: string;
     name: string;

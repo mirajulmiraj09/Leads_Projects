@@ -10,27 +10,25 @@ export const APP_ROUTES = [
   },
   {
     FunctionId: 'U002',
-    FunctionName: 'View Sizan',
-    routePath: '/test',
+    FunctionName: 'Active Product',
+    routePath: '/active-product',
     ModuleName: 'Management Console',
-    MenuName: 'User Section',
-
-  },
-
-  {
-    FunctionId: 'P001',
-    FunctionName: 'Add Product',
-    routePath: '/product/add',
-    ModuleName: 'Management ',
-    MenuName: 'Product Section',
-
+    MenuName: 'Active Product',
   },
   {
-    FunctionId: 'P002',
-    FunctionName: 'Product List',
-    routePath: '/product/list',
-    ModuleName: 'Management ',
-    MenuName: 'Product Section',
- 
-  }
+    FunctionId: 'U003',
+    FunctionName: 'News Event',
+    routePath: '/news-event',
+    ModuleName: 'Management Console',
+    MenuName: 'New Event',
+  },
+  {
+    FunctionId: 'U004',
+    FunctionName: 'Notification',
+    routePath: '/notification',
+    ModuleName: 'Management Console',
+    MenuName: 'Notification',
+  },
+
+  
 ];

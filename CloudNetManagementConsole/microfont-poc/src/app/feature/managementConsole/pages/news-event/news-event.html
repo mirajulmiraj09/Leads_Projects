@@ -1,0 +1,112 @@
+<div class="font-roboto w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 space-y-3">
+
+  <!-- ========================= -->
+  <!-- ✅ Panel 1: Form -->
+  <!-- ========================= -->
+  <div class="w-full">
+
+    <app-expansion-panel-header
+      [isOpenSignal]="isNewsPanelOpen"
+      panelTitle="News & Events">
+    </app-expansion-panel-header>
+
+    @if (isNewsPanelOpen()) {
+      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1 space-y-2">
+
+        <!-- ✅ Form Section -->
+        <div [formGroup]="newsEventForm" class="space-y-1">
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
+
+            <input-text-box
+              class="w-full"
+              [frmGroup]="newsEventForm"
+              controlName="title"
+              label="Title">
+            </input-text-box>
+
+            <input-text-box
+              class="w-full"
+              [frmGroup]="newsEventForm"
+              controlName="url"
+              label="URL">
+            </input-text-box>
+
+            <input-date
+              class="w-full"
+              [frmGroup]="newsEventForm"
+              controlName="date"
+              label="Date">
+            </input-date>
+
+          </div>
+
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+  <!-- ========================= -->
+  <!-- ✅ Panel 2: Grid -->
+  <!-- ========================= -->
+  <div class="w-full">
+
+    <app-expansion-panel-header
+      [isOpenSignal]="isNewsListOpen"
+      panelTitle="News & Events List">
+    </app-expansion-panel-header>
+
+    @if (isNewsListOpen()) {
+      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1 space-y-2">
+
+        <!-- ✅ GRID -->
+        <div class="w-full border rounded-lg overflow-hidden">
+
+          <!-- ✅ Loading -->
+          @if (isLoading()) {
+            <div class="p-4 text-center text-gray-500 animate-pulse">
+              Loading data...
+            </div>
+          }
+
+          <!-- ✅ Error -->
+          @if (!isLoading() && errorMessage()) {
+            <div class="p-4 text-center text-red-500">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <!-- ✅ No Data -->
+          @if (!isLoading() && !errorMessage() && newsEventList.length === 0) {
+            <div class="p-6 text-center text-gray-400 flex flex-col items-center gap-2">
+              <span class="text-3xl">📰</span>
+              <p>No News & Events Found</p>
+            </div>
+          }
+
+          <!-- ✅ Data Grid -->
+          @if (!isLoading() && newsEventList.length > 0) {
+            <div class="overflow-x-auto">
+              <generic-data-grid
+                class="min-w-[500px]"
+                [dataSource]="newsEventList"
+                [showEditButton]="true"
+                [showDeleteButton]="true"
+                [useInlineEdit]="false"
+                [uniqueIdField]="'id'"
+                (onFHEditClick)="onEdit($event)"
+                (onFHDeleteClick)="onDelete($event)">
+              </generic-data-grid>
+            </div>
+          }
+
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+</div>

@@ -1,0 +1,138 @@
+<div class="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 space-y-3">
+
+  <!-- ========================= -->
+  <!-- ✅ Expansion Panel 1 -->
+  <!-- ========================= -->
+  <div class="w-full">
+
+    <app-expansion-panel-header
+      [isOpenSignal]="isTransactionPanelOpen"
+      panelTitle="Transaction Management">
+    </app-expansion-panel-header>
+
+    @if (isTransactionPanelOpen()) {
+      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1">
+        <div [formGroup]="productForm" class="space-y-1">
+
+          <!-- Row 1 -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-1">
+            <input-text-box class="w-full"
+              [frmGroup]="productForm"
+              controlName="productName"
+              label="Product Name">
+            </input-text-box>
+
+            <input-text-box class="w-full"
+              [frmGroup]="productForm"
+              controlName="productCode"
+              label="Product Code">
+            </input-text-box>
+
+            <input-select-option-field class="w-full"
+              [frmGroup]="productForm"
+              controlName="productType"
+              [options]="productTypeOptions"
+              label="Product Type">
+            </input-select-option-field>
+
+            <input-text-box class="w-full"
+              [frmGroup]="productForm"
+              controlName="webUrl"
+              label="Web URL">
+            </input-text-box>
+          </div>
+
+          <!-- Row 2 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <input-text-area class="w-full"
+              [frmGroup]="productForm"
+              controlName="description"
+              label="Description">
+            </input-text-area>
+
+            <input-text-area class="w-full"
+              [frmGroup]="productForm"
+              controlName="details"
+              label="Details">
+            </input-text-area>
+          </div>
+
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <!-- ========================= -->
+  <!-- ✅ Expansion Panel 2 -->
+  <!-- ========================= -->
+  <div class="w-full">
+
+    <app-expansion-panel-header
+      [isOpenSignal]="isProductListOpen"
+      panelTitle="Active Product List">
+    </app-expansion-panel-header>
+
+    @if (isProductListOpen()) {
+      <div class="bg-white rounded-xl shadow-sm p-2 sm:p-3 mt-1 space-y-2">
+
+        <!-- Filter -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+          <input-select-option-field class="w-full"
+            [frmGroup]="productForm"
+            controlName="filterProductType"
+            label="Filter by Product Type"
+            [options]="productTypeOptions">
+          </input-select-option-field>
+        </div>
+
+        <!-- ✅ GRID + STATES -->
+        <div class="w-full border rounded-lg overflow-hidden">
+
+          <!-- Loading -->
+          @if (isLoading()) {
+            <div class="p-4 text-center text-gray-500 animate-pulse">
+              Loading data...
+            </div>
+          }
+
+          <!-- Error -->
+          @if (!isLoading() && errorMessage()) {
+            <div class="p-4 text-center text-red-500">
+              {{ errorMessage() }}
+            </div>
+          }
+
+          <!-- No Data -->
+          @if (!isLoading() && !errorMessage() && !hasData()) {
+            <div class="p-6 text-center text-gray-400 flex flex-col items-center gap-2">
+              <span class="text-3xl">📭</span>
+              <p>No Data Found</p>
+            </div>
+          }
+
+          <!-- Data Grid -->
+          @if (!isLoading() && hasData()) {
+            <div class="overflow-x-auto">
+              <generic-data-grid
+                class="min-w-[500px]"
+                [dataSource]="filteredProductList"
+                [showEditButton]="true"
+                [showDeleteButton]="true"
+                [useInlineEdit]="false"
+                [selectedColumns]="['productName', 'productCode']"
+                [uniqueIdField]="'productCode'"
+                (onFHEditClick)="onEdit($event)"
+                (onFHDeleteClick)="onDelete($event)">
+              </generic-data-grid>
+            </div>
+          }
+
+        </div>
+
+      </div>
+    }
+
+  </div>
+
+</div>

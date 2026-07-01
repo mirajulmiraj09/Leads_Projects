@@ -1,0 +1,171 @@
+<app-expansion-panel-header
+  [isOpenSignal]="isNotificationListOpen"
+  panelTitle="News & Events List">
+</app-expansion-panel-header>
+
+<div class="max-w-6xl mx-auto px-3 sm:px-4 py-5 bg-gray-50 min-h-screen font-roboto">
+
+  <form [formGroup]="notificationForm" class="space-y-5">
+
+    <!-- ========================= -->
+    <!-- ✅ CARD 1 -->
+    <!-- ========================= -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-6 hover:shadow-md transition">
+
+      <!-- ✅ Broadcast Type -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <label class="text-sm font-semibold text-gray-700 min-w-[160px]">
+          Broadcast Type :
+        </label>
+
+        <div class="flex flex-wrap gap-6">
+          <label class="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-blue-600">
+            <input
+              type="radio"
+              formControlName="BroadcastType"
+              value="All Customers"
+              class="accent-blue-600 w-4 h-4" />
+            <span class="text-sm">All Customer</span>
+          </label>
+
+          <label class="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-blue-600">
+            <input
+              type="radio"
+              formControlName="BroadcastType"
+              value="Individual"
+              class="accent-blue-600 w-4 h-4" />
+            <span class="text-sm">Individual</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ✅ Notification Type -->
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+        <label class="text-sm font-semibold text-gray-700 min-w-[160px]">
+          Notification Type :
+        </label>
+
+        <div class="flex gap-5">
+          <label class="flex items-center gap-2 cursor-pointer text-gray-600 hover:text-blue-600">
+            <input
+              type="radio"
+              formControlName="notificationType"
+              value="Push Notification"
+              class="accent-blue-600 w-4 h-4" />
+            <span class="text-sm">Push Notification</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- ✅ Receiver Section -->
+   @if (isIndividual) {
+  <div class="border-t pt-5 space-y-2">
+
+    <!-- ✅ Header -->
+    <div class="flex flex-col mb-3">
+      <h4 class="text-sm font-semibold text-gray-800">
+        Receiver Search
+      </h4>
+    </div>
+
+    <!-- ✅ Search Box -->
+    <div class="bg-gray-50 border border-gray-200 rounded-xl p-4">
+
+      <!-- ✅ Flex Container -->
+      <div class="flex flex-col lg:flex-row gap-4">
+
+        <!-- ✅ Search Type -->
+        <div class="w-full lg:w-[220px]">
+          <input-select-option-field
+            class="w-full"
+            [frmGroup]="searchForm"
+            controlName="searchType"
+            label="Search By"
+            [options]="searchTypeOptions">
+          </input-select-option-field>
+        </div>
+
+        <!-- ✅ Search Value -->
+        <div class="flex-1  lg:w-[200px]">
+          <input-text-box
+            class="w-full"
+            [frmGroup]="searchForm"
+            controlName="searchValue"
+            label="Search Value">
+          </input-text-box>
+        </div>
+
+        <!-- ✅ Button -->
+        <div class="w-full lg:w-auto flex ">
+          <generic-button
+            label="Search"
+            cssClass="w-full mt-4   lg:w-auto h-11 px-6 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+            (onClick)="onSearch()">
+          </generic-button>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+}
+
+
+      <!-- ✅ User Info -->
+      @if (userInfoFlag) {
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm bg-gray-50 p-4 rounded-lg border">
+
+          <div class="space-y-2">
+            <div>
+              <strong class="text-gray-900">Customer Id:</strong>
+              {{ userInfo.regCustUser.customerId }}
+            </div>
+            <div>
+              <strong class="text-gray-900">User Id:</strong>
+              {{ userInfo.regCustUser.userId }}
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <div>
+              <strong class="text-gray-900">Email:</strong>
+              {{ userInfo.regCustUser.emailAddress }}
+            </div>
+            <div>
+              <strong class="text-gray-900">Mobile:</strong>
+              {{ userInfo.regCustUser.mobileNumber }}
+            </div>
+          </div>
+
+        </div>
+      }
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- ✅ CARD 2 -->
+    <!-- ========================= -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 space-y-5 hover:shadow-md transition">
+
+      <!-- Subject -->
+      <input-text-box
+        class="w-full"
+        [frmGroup]="notificationForm"
+        controlName="subject"
+        label="*Subject">
+      </input-text-box>
+
+      <!-- Description -->
+      <input-text-area
+        class="w-full"
+        [frmGroup]="notificationForm"
+        controlName="description"
+        label="*Description">
+      </input-text-area>
+
+    </div>
+
+  </form>
+
+</div>

@@ -5,7 +5,7 @@
   import { InputTextBox } from '../../input-types/input-text-box/input-text-box';
   import { InputIdBox } from '../../input-types/input-id-box/input-id-box';
   import { InputAmountInWord } from '../../input-types/input-amount-in-word/input-amount-in-word';
-  import {  InputTagComponent } from '../../input-types/input-tag/input-tag';
+  import { InputTagComponent } from '../../input-types/input-tag/input-tag';
   import { InputSelectOptionField } from '../../input-types/input-select-option-field/input-select-option-field';
   import { InputFile } from '../../input-types/input-file/input-file';
   import { InputOfficeBox } from '../../input-types/input-office-box/input-office-box';

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import {ProductConstant} from '../constant/product.constant';
 import { ProductPayload } from '../model/product.model';
-import { GlobalResponse } from './../model/globar.model';
+import { GlobalResponse } from '../model/globar.model';
 
 
 @Injectable({

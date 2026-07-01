@@ -4,9 +4,9 @@ import { InputTextBox } from '../../../../shared/common-components/input-types/i
 import { InputSelectOptionField } from '../../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { InputTextArea } from '../../../../shared/common-components/input-types/input-text-area/input-text-area';
 import { GenericDataGrid } from '../../../../shared/common-components/generic-component-type/generic-data-grid';
-import { ActiveProductApiService } from "./../../engine/services/active-product.api.service";
-import { GlobalResponse } from './../../engine/model/globar.model';
-import { ProductPayload } from './../../engine/model/product.model';
+import { ActiveProductApiService } from "../../coreConsole/service/active-product.api.service";
+import { GlobalResponse } from '../../coreConsole/model/globar.model';
+import { ProductPayload } from '../../coreConsole/model/product.model';
 import { ExpansionPanelHeader } from '../../../../shared/common-components/expansion-panel-header/expansion-panel-header';
 import { BUTTON_VISIBILITY } from '../../../../shared/constant/button-signals.constant';
 

@@ -6,9 +6,9 @@ import { GenericButton } from '../../../../shared/common-components/generic-comp
 import { InputSelectOptionField } from '../../../../shared/common-components/input-types/input-select-option-field/input-select-option-field';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { NotificationApiService } from '../../engine/services/notification.service';
+import { NotificationApiService } from '../../coreConsole/service/notification.service';
 import { inject } from '@angular/core';
-import { UserPayload } from '../../engine/model/globar.model';
+import { UserPayload } from '../../coreConsole/model/globar.model';
 import { ExpansionPanelHeader } from '../../../../shared/common-components/expansion-panel-header/expansion-panel-header';
 
 @Component({

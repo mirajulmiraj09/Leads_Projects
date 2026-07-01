@@ -24,16 +24,17 @@ export interface ManagementConsoleApiResponse<T> {
 */
 export interface ManagementConsoleLoginResult {
   /*
-    Actual backend response field:
-    Result.access_token
+    Real API fields inside Result.
   */
   access_token?: string;
+  expires_in?: number;
+  issued?: string;
+  expires?: string;
 
   /*
-    Future possible fields.
+    Future/fallback fields.
   */
   refresh_token?: string;
-  expires_in?: number;
 
   AccessToken?: string;
   accessToken?: string;

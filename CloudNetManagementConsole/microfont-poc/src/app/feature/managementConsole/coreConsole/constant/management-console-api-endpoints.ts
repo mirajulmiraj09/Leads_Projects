@@ -13,4 +13,11 @@ export const MANAGEMENT_CONSOLE_API_ENDPOINTS = {
 
   //About
 aboutGetDetail:`${environment.managementConsoleApiBaseUrl}/api/About/getDetail`,
+aboutEditDetail:`${environment.managementConsoleApiBaseUrl}/api/About/editDetail`,
+//Contact
+contactGetDetails:`${environment.managementConsoleApiBaseUrl}/api/About/getContactDetails`,
+contactEditDetails:`${environment.managementConsoleApiBaseUrl}/api/About/editContactDetails`,
+//Dashboard
+dashboardSummary:`${environment.managementConsoleApiBaseUrl}/api/Dashboard/GetDashboardSummary`,
+dashboardDetails:`${environment.managementConsoleApiBaseUrl}/api/Dashboard/GetDashboardDetails`,
 } as const;

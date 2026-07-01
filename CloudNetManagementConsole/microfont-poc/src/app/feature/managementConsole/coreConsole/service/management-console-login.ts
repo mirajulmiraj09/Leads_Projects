@@ -49,7 +49,7 @@ export class ManagementConsoleLogin {
     শুধু এই payload source replace করলেই হবে।
   */
   private readonly staticLoginPayload: ManagementConsoleLoginRequest = {
-    UserName: 'DOB3',
+    UserName: 'DOB2',
     Password: '1',
     ImeiOrIP: '192.168.51.244',
     OTP: '',
@@ -259,14 +259,14 @@ export class ManagementConsoleLogin {
     }
 
     const expiresIn =
-      loginResult.ExpiresIn ?? loginResult.expiresIn;
+      loginResult.ExpiresIn ?? loginResult.expires_in;
 
     if (
       typeof expiresIn === 'number' &&
       Number.isFinite(expiresIn) &&
       expiresIn > 0
     ) {
-      return Date.now() + expiresIn * 1000;
+      return Date.now() + expiresIn ;
     }
 
     const tokenExpiry =

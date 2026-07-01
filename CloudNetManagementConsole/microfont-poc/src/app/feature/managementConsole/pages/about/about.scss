@@ -1,24 +1,116 @@
 :host {
+  /*
+    ============================================================
+    EASY-TO-CHANGE DESIGN SETTINGS
+    ============================================================
+
+    Tailwind দিয়ে main responsive layout করা হয়েছে।
+    এই SCSS-এ শুধু About page-এর special styling রাখা হলো।
+  */
+  --about-font-family: 'Roboto', Arial, sans-serif;
+
+  --about-page-background: #f8fafc;
+
+  --about-readonly-input-background: #edf1f5;
+  --about-editable-input-background: #ffffff;
+
+  --about-input-text-color: #0f172a;
+  --about-input-border-color: #94a3b8;
+
+  --about-panel-radius: 6px;
+  --about-panel-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+  
+
   display: block;
   min-width: 0;
-  font-family: 'Roboto', Arial, sans-serif;
+  font-family: var(--about-font-family);
+  /*
+  Expansion header-এর বাম side থেকে icon কতটুকু ভিতরে থাকবে।
+*/
+--about-expansion-icon-left-space: 12px;
 }
 
 /*
-  Shared InputTextBox read-only appearance.
-
-  Page-specific CSS শুধু এখানে থাকবে।
-  Global styles.scss touch করা হবে না।
+  ============================================================
+  PAGE BACKGROUND
+  ============================================================
 */
-:host ::ng-deep input-text-box input[readonly] {
+.about-page {
+  background: var(--about-page-background);
+  font-family: var(--about-font-family);
+}
+
+/*
+  ============================================================
+  SHARED EXPANSION HEADER
+  ------------------------------------------------------------
+  Shared component modify করা হচ্ছে না।
+  শুধু About page-এর ভিতরে appearance control হচ্ছে।
+  ============================================================
+*/
+:host ::ng-deep .about-panel .expansion-header {
+  border-radius: var(--about-panel-radius) var(--about-panel-radius) 0 0;
+  cursor: pointer;
+}
+
+/*
+  ============================================================
+  SHARED INPUT TEXT BOX
+  ============================================================
+*/
+
+/*
+  Initial page load / reset state:
+  input blank + disabled + readonly appearance
+*/
+:host ::ng-deep .about-panel input[readonly] {
   cursor: default;
-  color: #0f172a;
-  background-color: #ffffff;
+  color: var(--about-input-text-color);
+  background: var(--about-readonly-input-background);
 }
 
 /*
-  Long contact values যেন overflow না করে।
+  Update click করার পর editable input white থাকবে।
 */
-:host ::ng-deep input-text-box .custom-input {
-  text-overflow: ellipsis;
+:host ::ng-deep .about-panel input:not([readonly]) {
+  color: var(--about-input-text-color);
+  background: var(--about-editable-input-background);
+}
+
+/*
+  Shared input border একটু consistent রাখার জন্য।
+  Value বেশি বড় হলে input নিজে horizontal scroll করবে,
+  layout break হবে না।
+*/
+:host ::ng-deep .about-panel .custom-input {
+  border-color: var(--about-input-border-color);
+  font-family: var(--about-font-family);
+}
+
+/*
+  ============================================================
+  DETAILS CARD
+  ============================================================
+*/
+.about-detail-card {
+  min-height: 96px;
+  box-shadow: var(--about-panel-shadow);
+}
+
+/*
+  ============================================================
+  SMALL SCREEN IMPROVEMENT
+  ============================================================
+*/
+@media (max-width: 640px) {
+  .about-detail-card {
+    min-height: auto;
+  }
+}
+/*
+  ============================================================
+  EXPANSION HEADER LEFT ICON SPACING
+*/
+:host ::ng-deep .about-panel .expansion-header > div.flex {
+  padding-left: var(--about-expansion-icon-left-space);
 }

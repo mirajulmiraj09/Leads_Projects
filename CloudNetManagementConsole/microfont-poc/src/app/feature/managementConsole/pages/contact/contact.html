@@ -1,0 +1,198 @@
+<section
+  class="contact-page min-h-full w-full p-3 sm:p-4 lg:p-5">
+
+  <!-- =======================================================
+       ERROR ALERT
+       ======================================================= -->
+  @if (errorMessage()) {
+    <section
+      class="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      role="alert">
+
+      <mat-icon class="mt-0.5 text-[19px]">
+        error_outline
+      </mat-icon>
+
+      <div class="min-w-0">
+        <p class="font-medium">
+          Unable to complete Contact action
+        </p>
+
+        <p class="mt-0.5 break-words">
+          {{ errorMessage() }}
+        </p>
+      </div>
+    </section>
+  }
+
+  <!-- =======================================================
+       CONTACT INFORMATION
+       ======================================================= -->
+  <section
+    class="contact-panel overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+    <app-expansion-panel-header
+      [panelTitle]="'Contact Information'"
+      [isOpenSignal]="contactInformationPanelOpen">
+    </app-expansion-panel-header>
+
+    @if (contactInformationPanelOpen()) {
+      <div class="border-t border-slate-100 p-4">
+
+        @if (!isEditMode()) {
+          <p
+            class="mb-4 rounded-md border border-blue-100 bg-blue-50 px-3 py-2 text-xs font-medium text-blue-700">
+
+            Click the Update button to edit Contact Details.
+          </p>
+        }
+
+        @if (isEditMode()) {
+          <p
+            class="mb-4 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800">
+
+            Edit mode is active. After editing, click the Save button.
+          </p>
+        }
+
+        <!--
+          ======================================================
+          INPUT WIDTH CONTROL
+          ======================================================
+
+          Desktop width change করতে এই Tailwind class edit করবে:
+
+          xl:grid-cols-[520px_520px]
+
+          Example:
+          xl:grid-cols-[420px_620px]
+
+          Mobile: 1 column
+          md:     2 equal columns
+          xl:     custom fixed widths
+        -->
+        <form
+          class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-[520px_520px]"
+          [formGroup]="contactForm">
+
+          <input-text-box
+            [frmGroup]="contactForm"
+            controlName="callCenterHotlineNumber"
+            label="Call Center Hotline Number"
+            placeholder="Enter Call Center Hotline Number"
+            [isReadonly]="!isEditMode()"
+            displayMode="outline">
+          </input-text-box>
+
+          <input-text-box
+            [frmGroup]="contactForm"
+            controlName="emailAddress"
+            label="Contact Email Address"
+            placeholder="Enter Contact Email Address"
+            [isReadonly]="!isEditMode()"
+            displayMode="outline">
+          </input-text-box>
+        </form>
+      </div>
+    }
+  </section>
+
+  <!-- =======================================================
+       CONTACT DETAILS
+       ======================================================= -->
+  <section
+    class="contact-panel mt-4 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+    <app-expansion-panel-header
+      [panelTitle]="'Contact Details'"
+      [isOpenSignal]="contactDetailsPanelOpen">
+    </app-expansion-panel-header>
+
+    @if (contactDetailsPanelOpen()) {
+      <div class="border-t border-slate-100 p-4">
+
+        @if (loading() && !contactInformation()) {
+          <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+            @for (item of [1, 2]; track item) {
+              <div
+                class="h-24 animate-pulse rounded-md border border-slate-100 bg-slate-50">
+              </div>
+            }
+          </div>
+        }
+
+        @if (contactInformation(); as details) {
+          <section
+            class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+            <!-- Call Center Hotline -->
+            <article
+              class="contact-detail-card flex min-w-0 items-start gap-3 rounded-md border border-slate-200 bg-white p-4 shadow-sm">
+
+              <span
+                class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-indigo-50 text-indigo-700">
+
+                <mat-icon class="text-[20px]">
+                  support_agent
+                </mat-icon>
+              </span>
+
+              <div class="min-w-0">
+                <p
+                  class="text-xs font-medium uppercase tracking-wide text-slate-500">
+
+                  Call Center Hotline
+                </p>
+
+                <p
+                  class="mt-1 break-words text-sm font-medium text-slate-700">
+
+                  {{ details.callCenterHotlineNumber }}
+                </p>
+              </div>
+            </article>
+
+            <!-- Contact Email -->
+            <article
+              class="contact-detail-card flex min-w-0 items-start gap-3 rounded-md border border-slate-200 bg-white p-4 shadow-sm">
+
+              <span
+                class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-violet-50 text-violet-700">
+
+                <mat-icon class="text-[20px]">
+                  mail
+                </mat-icon>
+              </span>
+
+              <div class="min-w-0">
+                <p
+                  class="text-xs font-medium uppercase tracking-wide text-slate-500">
+
+                  Contact Email Address
+                </p>
+
+                <p
+                  class="mt-1 break-words text-sm font-medium text-slate-700">
+
+                  {{ details.emailAddress }}
+                </p>
+              </div>
+            </article>
+          </section>
+        }
+
+        @if (
+          !loading() &&
+          !contactInformation() &&
+          !errorMessage()
+        ) {
+          <p
+            class="rounded-md border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+
+            No Contact information is available.
+          </p>
+        }
+      </div>
+    }
+  </section>
+</section>

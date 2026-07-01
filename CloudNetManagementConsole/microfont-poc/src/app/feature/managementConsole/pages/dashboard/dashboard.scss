@@ -1,0 +1,375 @@
+:host {
+  /*
+    ============================================================
+    EASY-TO-CHANGE DESIGN SETTINGS
+    ============================================================
+
+    Main layout responsive করার জন্য Tailwind use হয়েছে।
+    এই SCSS-এ শুধু Dashboard-specific visual tuning রাখা হলো।
+  */
+  --dashboard-font-family: 'Roboto', Arial, sans-serif;
+
+  --dashboard-page-background: #f8fafc;
+
+  --dashboard-card-from: #08a88e;
+  --dashboard-card-to: #2494a7;
+
+  --dashboard-card-min-height: 76px;
+
+  --dashboard-card-value-size: 30px;
+  --dashboard-card-label-size: 12px;
+
+  --dashboard-panel-radius: 6px;
+
+  
+
+  --dashboard-grid-header-height: 32px;
+  --dashboard-grid-row-height: 34px;
+
+  --dashboard-grid-border-color: #d6dfdf;
+
+  /*
+    Shared ExpansionPanelHeader-এর বাম side grid icon
+    edge থেকে কতটুকু ভিতরে থাকবে।
+  */
+  --dashboard-expansion-icon-left-space: 12px;
+
+  /*
+    Modal width control।
+  */
+  --dashboard-modal-width: 1260px;
+  --dashboard-modal-max-height: 74vh;
+
+  display: block;
+  min-width: 0;
+  font-family: var(--dashboard-font-family);
+}
+
+/*
+  ============================================================
+  PAGE
+  ============================================================
+*/
+.dashboard-page {
+  background: var(--dashboard-page-background);
+  font-family: var(--dashboard-font-family);
+}
+
+/*
+  ============================================================
+  DATE FILTER
+  ============================================================
+*/
+.dashboard-filter-card {
+  font-family: var(--dashboard-font-family);
+}
+
+/*
+  Search button styling।
+  GenericButton-এর cssClass property এই class button-এ বসায়।
+*/
+:host ::ng-deep .dashboard-search-button {
+  min-width: 100px !important;
+  min-height: 32px !important;
+
+//   color: #ffffff !important;
+//   background: #005783 !important;
+
+  border-radius: 4px !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+/*
+  ============================================================
+  METRIC CARD
+  ============================================================
+*/
+.dashboard-metric-card {
+  min-width: 0;
+  min-height: var(--dashboard-card-min-height);
+
+  padding: 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  color: #ffffff;
+  background: linear-gradient(
+    90deg,
+    var(--dashboard-card-from),
+    var(--dashboard-card-to)
+  );
+
+  border: 0;
+  border-radius: 4px;
+
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.2);
+
+  cursor: default;
+  font-family: var(--dashboard-font-family);
+}
+
+.dashboard-metric-card strong {
+  font-size: var(--dashboard-card-value-size);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.dashboard-metric-card span {
+  text-align: center;
+
+  font-size: var(--dashboard-card-label-size);
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.dashboard-metric-card-clickable {
+  cursor: pointer;
+}
+
+.dashboard-metric-card-clickable:hover {
+  filter: brightness(0.96);
+  transform: translateY(-1px);
+}
+
+.dashboard-metric-card-link {
+  text-decoration: underline;
+}
+
+/*
+  ============================================================
+  SHARED EXPANSION HEADER
+  ------------------------------------------------------------
+  Shared component modify করা হচ্ছে না।
+  শুধু Dashboard page-এর মধ্যে left icon spacing দেওয়া হয়েছে।
+  ============================================================
+*/
+:host ::ng-deep
+  .dashboard-section
+  .expansion-header
+  > div.flex {
+  padding-left: var(
+    --dashboard-expansion-icon-left-space
+  );
+}
+
+/*
+  Modal-এর expansion header icon spacing।
+*/
+:host ::ng-deep
+  .dashboard-modal-content
+  .expansion-header
+  > div.flex {
+  padding-left: var(
+    --dashboard-expansion-icon-left-space
+  );
+}
+
+/*
+  ============================================================
+  EMPTY PANELS
+  ============================================================
+*/
+.dashboard-summary-placeholder {
+  min-height: 210px;
+  background: #ffffff;
+}
+
+.dashboard-chart-empty-state {
+  min-height: 280px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+  background: #ffffff;
+
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/*
+  ============================================================
+  GENERIC DATA GRID LOCAL STYLE
+  ------------------------------------------------------------
+  Shared GenericDataGrid edit করা হচ্ছে না।
+  শুধু Dashboard-এর grid appearance override করা হলো।
+  ============================================================
+*/
+:host ::ng-deep
+  .dashboard-grid-host
+  generic-data-grid
+  .mt-6,
+:host ::ng-deep
+  .dashboard-modal-grid-host
+  generic-data-grid
+  .mt-6 {
+  margin-top: 0 !important;
+}
+
+:host ::ng-deep
+  .dashboard-grid-host
+  generic-data-grid
+  table,
+:host ::ng-deep
+  .dashboard-modal-grid-host
+  generic-data-grid
+  table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+}
+
+:host ::ng-deep
+  .dashboard-grid-host
+  generic-data-grid
+  table
+  th,
+:host ::ng-deep
+  .dashboard-modal-grid-host
+  generic-data-grid
+  table
+  th {
+  min-height: var(
+    --dashboard-grid-header-height
+  ) !important;
+
+  height: var(
+    --dashboard-grid-header-height
+  ) !important;
+
+  padding: 0 10px !important;
+
+//   color: var(
+//     --dashboard-grid-header-text-color
+//   ) !important;
+
+//   background: var(
+//     --dashboard-grid-header-background
+//   ) !important;
+
+//   border: 1px solid var(
+//     --dashboard-grid-border-color
+//   ) !important;
+
+  vertical-align: middle !important;
+
+  font-size: 12px !important;
+  font-weight: 700 !important;
+}
+
+:host ::ng-deep
+  .dashboard-grid-host
+  generic-data-grid
+  table
+  td,
+:host ::ng-deep
+  .dashboard-modal-grid-host
+  generic-data-grid
+  table
+  td {
+  min-height: var(
+    --dashboard-grid-row-height
+  ) !important;
+
+  height: var(
+    --dashboard-grid-row-height
+  ) !important;
+
+  padding: 0 10px !important;
+
+  border: 1px solid var(
+    --dashboard-grid-border-color
+  ) !important;
+
+  vertical-align: middle !important;
+
+  font-size: 12px !important;
+  font-weight: 500 !important;
+}
+
+:host ::ng-deep
+  .dashboard-grid-host
+  generic-data-grid
+  .mat-sort-header-container,
+:host ::ng-deep
+  .dashboard-modal-grid-host
+  generic-data-grid
+  .mat-sort-header-container {
+  min-height: var(
+    --dashboard-grid-header-height
+  ) !important;
+
+  display: flex !important;
+  align-items: center !important;
+}
+
+/*
+  Grid empty-message shared grid-এর নিচে centered দেখাবে।
+*/
+.dashboard-empty-grid-message {
+  margin: 10px 0 0;
+
+  text-align: center;
+
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/*
+  ============================================================
+  MODAL
+  ============================================================
+*/
+:host ::ng-deep .dashboard-detail-modal {
+  width: var(--dashboard-modal-width) !important;
+  max-width: calc(100vw - 36px) !important;
+}
+
+:host ::ng-deep
+  .dashboard-detail-modal
+  .modal-body {
+  max-height: var(
+    --dashboard-modal-max-height
+  ) !important;
+
+  overflow: auto !important;
+}
+
+.dashboard-modal-content {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.dashboard-modal-loading {
+  min-height: 180px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/*
+  ============================================================
+  RESPONSIVE TUNING
+  ============================================================
+*/
+@media (max-width: 640px) {
+  :host {
+    --dashboard-card-value-size: 26px;
+  }
+
+  .dashboard-summary-placeholder {
+    min-height: 140px;
+  }
+}

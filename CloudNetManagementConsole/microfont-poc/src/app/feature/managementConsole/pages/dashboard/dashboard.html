@@ -1,0 +1,429 @@
+<section
+  class="dashboard-page min-h-full w-full p-3 sm:p-4 lg:p-5">
+
+  <!-- =======================================================
+       PAGE ERROR
+       ======================================================= -->
+  @if (errorMessage()) {
+    <section
+      class="mb-4 flex items-start gap-3 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+      role="alert">
+
+      <mat-icon class="mt-0.5 text-[19px]">
+        error_outline
+      </mat-icon>
+
+      <div class="min-w-0">
+        <p class="font-medium">
+          Dashboard request could not be completed
+        </p>
+
+        <p class="mt-0.5 break-words">
+          {{ errorMessage() }}
+        </p>
+      </div>
+    </section>
+  }
+
+  <!-- =======================================================
+       DATE SEARCH
+       ======================================================= -->
+  <section
+    class="dashboard-filter-card rounded-md border border-slate-200 bg-white p-4 shadow-sm">
+
+    <form
+      class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-3"
+      [formGroup]="filterForm">
+
+      <!--
+        Width change guide:
+
+        lg:w-[320px]
+        ↑ এই value change করলে Date field width change হবে।
+
+        Example:
+        lg:w-[260px]
+        lg:w-[420px]
+      -->
+      <div class="w-full sm:w-[210px] lg:w-[320px] sm:translate-y-2">
+        <input-date
+          [frmGroup]="filterForm"
+          controlName="pDATE"
+          label="Date"
+          dateFormat="DD/MM/YYYY"
+          displayMode="outline"
+          [includeTime]="1">
+        </input-date>
+      </div>
+
+      <generic-button
+        label="Search"
+        icon="search"
+        cssClass="dashboard-search-button"
+        (onClick)="searchByDate()">
+      </generic-button>
+    </form>
+  </section>
+
+  <!-- =======================================================
+       SUMMARY METRIC CARDS
+       ======================================================= -->
+  <section
+    class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7">
+
+    @for (card of metricCards(); track card.key) {
+      <button
+        type="button"
+        class="dashboard-metric-card"
+        [class.dashboard-metric-card-clickable]="card.detailKpi"
+        [attr.aria-label]="card.label"
+        [attr.aria-disabled]="!card.detailKpi"
+        (click)="openMetricDetails(card)">
+
+        <strong>
+          {{ formatMetricValue(card.value) }}
+        </strong>
+
+        <span
+          [class.dashboard-metric-card-link]="card.detailKpi">
+
+          {{ card.label }}
+        </span>
+      </button>
+    }
+  </section>
+
+  <!-- =======================================================
+       SUMMARY PLACEHOLDER PANELS
+       -------------------------------------------------------
+       KPI 5 / 8 / 9 / 10 / 16 calls are cached.
+       Exact visual mapping was not supplied yet.
+       ======================================================= -->
+  <section
+    class="mt-3 grid grid-cols-1 gap-3 lg:grid-cols-3">
+
+    <!-- Mobile Topup -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'Mobile Topup Summary'"
+        [isOpenSignal]="mobileTopupPanelOpen">
+      </app-expansion-panel-header>
+
+      @if (mobileTopupPanelOpen()) {
+        <div
+          class="dashboard-summary-placeholder">
+        </div>
+      }
+    </section>
+
+    <!-- MFS Send Money -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'MFS Send Money Summary'"
+        [isOpenSignal]="mfsSendMoneyPanelOpen">
+      </app-expansion-panel-header>
+
+      @if (mfsSendMoneyPanelOpen()) {
+        <div
+          class="dashboard-summary-placeholder">
+        </div>
+      }
+    </section>
+
+    <!-- Bills Pay -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'Bills Pay Summary'"
+        [isOpenSignal]="billsPayPanelOpen">
+      </app-expansion-panel-header>
+
+      @if (billsPayPanelOpen()) {
+        <div
+          class="dashboard-summary-placeholder">
+        </div>
+      }
+    </section>
+  </section>
+
+  <!-- =======================================================
+       TODAY'S TRANSACTION
+       ======================================================= -->
+  <section
+    class="dashboard-section mt-3 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+    <app-expansion-panel-header
+      [panelTitle]="'Today’s Transaction'"
+      [isOpenSignal]="todayTransactionPanelOpen">
+    </app-expansion-panel-header>
+
+    @if (todayTransactionPanelOpen()) {
+      <div class="border-t border-slate-100">
+
+        <!-- Successful / Failed Switch -->
+        <div
+          class="flex flex-wrap items-center gap-3 border-b border-slate-100 px-4 py-3">
+
+          <span
+            class="text-xs font-medium text-slate-600">
+
+            Transaction Status
+          </span>
+
+          <generic-switch
+            [frmGroup]="todayTransactionForm"
+            controlName="isSuccessful"
+            displayMode="horizontal"
+            [isChecked]="todayTransactionForm.controls.isSuccessful.value === true"
+            [enable]="!todayTransactionLoading()"
+            (onSwitchChanged)="onTodayTransactionStatusChanged($event)">
+          </generic-switch>
+
+          <span
+            class="rounded-full px-2.5 py-1 text-xs font-medium"
+            [class.bg-emerald-50]="todayTransactionStatus() === 'Successful'"
+            [class.text-emerald-700]="todayTransactionStatus() === 'Successful'"
+            [class.bg-red-50]="todayTransactionStatus() === 'Failed'"
+            [class.text-red-700]="todayTransactionStatus() === 'Failed'">
+
+            {{ todayTransactionStatus() }}
+          </span>
+
+          @if (todayTransactionLoading()) {
+            <span
+              class="text-xs text-slate-500">
+
+              Loading transaction details...
+            </span>
+          }
+        </div>
+
+        <div
+          class="dashboard-grid-host overflow-x-auto p-4">
+
+          <generic-data-grid
+            id="dashboard-today-transaction-grid"
+            [dataSource]="todayTransactionRows()"
+            [selectedColumns]="todayTransactionColumns()"
+            [customColumnNames]="todayTransactionColumnNames()"
+            [initPageSize]="10"
+            [pageSizeOptions]="[5, 10, 20]"
+            [showPaginator]="true"
+            [useInlineEdit]="false">
+          </generic-data-grid>
+
+          @if (
+            !todayTransactionLoading() &&
+            todayTransactionRows().length === 0
+          ) {
+            <p
+              class="dashboard-empty-grid-message">
+
+              No Available Data
+            </p>
+          }
+        </div>
+      </div>
+    }
+  </section>
+
+  <!-- =======================================================
+       LAST 30 DAYS CHART
+       KPI 11
+       ======================================================= -->
+  <section
+    class="dashboard-section mt-3 overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+    <app-expansion-panel-header
+      [panelTitle]="'Last 30 Days Transaction'"
+      [isOpenSignal]="lastThirtyDaysPanelOpen">
+    </app-expansion-panel-header>
+
+    @if (lastThirtyDaysPanelOpen()) {
+      <div class="border-t border-slate-100 p-4">
+
+        @if (chartRows().length) {
+          <common-bar-chart
+            [headerTitle]="'Last 30 Days Transaction'"
+            [tooltipLabel]="'Transaction Details'"
+            [dataByRange]="chartData()"
+            [height]="300"
+            [showToolbar]="true"
+            [showLegend]="true"
+            [showWeekly]="false"
+            [showMonthly]="true"
+            [showYearly]="false"
+            [horizontal]="false"
+            [range]="'monthly'">
+          </common-bar-chart>
+        }
+
+        @if (!chartRows().length && !loading()) {
+          <div
+            class="dashboard-chart-empty-state">
+
+            No Available Data
+          </div>
+        }
+      </div>
+    }
+  </section>
+
+  <!-- =======================================================
+       BOTTOM GRID
+       ======================================================= -->
+  <section
+    class="mt-3 grid grid-cols-1 gap-3 xl:grid-cols-3">
+
+    <!-- Top User -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'Top User'"
+        [isOpenSignal]="topUserPanelOpen">
+      </app-expansion-panel-header>
+
+      @if (topUserPanelOpen()) {
+        <div
+          class="dashboard-grid-host overflow-x-auto p-4">
+
+          <generic-data-grid
+            id="dashboard-top-user-grid"
+            [dataSource]="topUserRows()"
+            [selectedColumns]="topUserColumns"
+            [customColumnNames]="topUserColumnNames"
+            [initPageSize]="5"
+            [pageSizeOptions]="[5, 10, 20]"
+            [showPaginator]="true"
+            [useInlineEdit]="false">
+          </generic-data-grid>
+        </div>
+      }
+    </section>
+
+    <!-- Large Devices -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'Users with Large Number of Devices'"
+        [isOpenSignal]="largeDevicePanelOpen">
+      </app-expansion-panel-header>
+
+      @if (largeDevicePanelOpen()) {
+        <div
+          class="dashboard-grid-host overflow-x-auto p-4">
+
+          <generic-data-grid
+            id="dashboard-large-device-grid"
+            [dataSource]="largeDeviceRows()"
+            [selectedColumns]="largeDeviceColumns"
+            [customColumnNames]="largeDeviceColumnNames"
+            [initPageSize]="5"
+            [pageSizeOptions]="[5, 10, 20]"
+            [showPaginator]="true"
+            [useInlineEdit]="false">
+          </generic-data-grid>
+
+          @if (
+            !loading() &&
+            largeDeviceRows().length === 0
+          ) {
+            <p
+              class="dashboard-empty-grid-message">
+
+              No Available Data
+            </p>
+          }
+        </div>
+      }
+    </section>
+
+    <!-- Password Changed -->
+    <section
+      class="dashboard-section overflow-hidden rounded-md border border-slate-200 bg-white shadow-sm">
+
+      <app-expansion-panel-header
+        [panelTitle]="'Users Changed Password Multiple Times'"
+        [isOpenSignal]="changedPasswordPanelOpen">
+      </app-expansion-panel-header>
+
+      @if (changedPasswordPanelOpen()) {
+        <div
+          class="dashboard-grid-host overflow-x-auto p-4">
+
+          <generic-data-grid
+            id="dashboard-changed-password-grid"
+            [dataSource]="changedPasswordRows()"
+            [selectedColumns]="changedPasswordColumns"
+            [customColumnNames]="changedPasswordColumnNames"
+            [initPageSize]="5"
+            [pageSizeOptions]="[5, 10, 20]"
+            [showPaginator]="true"
+            [useInlineEdit]="false">
+          </generic-data-grid>
+        </div>
+      }
+    </section>
+  </section>
+</section>
+
+<!-- =========================================================
+     KPI DETAIL MODAL
+     ========================================================= -->
+<generic-modal
+  [isVisible]="detailModalVisible()"
+  [modalTitle]="detailModalTitle()"
+  cssClass="dashboard-detail-modal"
+  [showDefaultFooter]="false"
+  (modalClosed)="closeMetricModal()">
+
+  <div class="dashboard-modal-content">
+
+    <app-expansion-panel-header
+      [panelTitle]="detailModalTitle()"
+      [isOpenSignal]="metricModalPanelOpen">
+    </app-expansion-panel-header>
+
+    @if (metricModalPanelOpen()) {
+      <div
+        class="dashboard-modal-grid-host overflow-x-auto border border-slate-100 p-4">
+
+        @if (modalLoading()) {
+          <div
+            class="dashboard-modal-loading">
+
+            Loading details...
+          </div>
+        }
+
+        @if (!modalLoading()) {
+          <generic-data-grid
+            id="dashboard-metric-detail-grid"
+            [dataSource]="detailModalRows()"
+            [selectedColumns]="detailModalColumns()"
+            [customColumnNames]="detailModalColumnNames()"
+            [initPageSize]="10"
+            [pageSizeOptions]="[10, 20, 50, 100]"
+            [showPaginator]="true"
+            [useInlineEdit]="false">
+          </generic-data-grid>
+
+          @if (!detailModalRows().length) {
+            <p
+              class="dashboard-empty-grid-message">
+
+              No Available Data
+            </p>
+          }
+        }
+      </div>
+    }
+  </div>
+</generic-modal>

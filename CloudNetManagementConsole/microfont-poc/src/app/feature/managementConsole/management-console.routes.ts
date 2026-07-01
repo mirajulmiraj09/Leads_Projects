@@ -28,6 +28,20 @@ export const managementConsoleRoutes: Routes = [
            (module) => module.About,
         ),
 },
+{
+  path: 'contact',
+  loadComponent: () =>
+    import('./pages/contact/contact').then(
+      (module) => module.Contact,
+    ),
+},
+{
+  path: 'dashboard',
+  loadComponent: () =>
+    import('./pages/dashboard/dashboard').then(
+      (module) => module.Dashboard,
+    ),
+},
     ],
   },
 ];

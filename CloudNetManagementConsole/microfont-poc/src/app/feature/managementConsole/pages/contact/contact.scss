@@ -1,0 +1,114 @@
+:host {
+  /*
+    ============================================================
+    EASY-TO-CHANGE DESIGN SETTINGS
+    ============================================================
+
+    Main responsive layout Tailwind দিয়ে করা হয়েছে।
+    এই SCSS-এ page-specific appearance control করা হচ্ছে।
+  */
+  --contact-font-family: 'Roboto', Arial, sans-serif;
+
+  --contact-page-background: #f8fafc;
+
+  --contact-readonly-input-background: #edf1f5;
+  --contact-editable-input-background: #ffffff;
+
+  --contact-input-text-color: #0f172a;
+  --contact-input-border-color: #94a3b8;
+
+  --contact-panel-radius: 6px;
+  --contact-detail-card-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.12);
+
+  /*
+    Shared ExpansionPanelHeader-এর left grid icon
+    header edge থেকে কতটা ভেতরে থাকবে।
+  */
+  --contact-expansion-icon-left-space: 12px;
+
+  display: block;
+  min-width: 0;
+  font-family: var(--contact-font-family);
+}
+
+/*
+  ============================================================
+  PAGE
+  ============================================================
+*/
+.contact-page {
+  background: var(--contact-page-background);
+  font-family: var(--contact-font-family);
+}
+
+/*
+  ============================================================
+  SHARED EXPANSION HEADER
+  ------------------------------------------------------------
+  Shared component edit করা হচ্ছে না।
+  শুধু Contact page-এর ভিতরে left icon spacing control করছি।
+  ============================================================
+*/
+:host ::ng-deep .contact-panel .expansion-header > div.flex {
+  padding-left: var(
+    --contact-expansion-icon-left-space
+  );
+}
+
+/*
+  ============================================================
+  SHARED INPUT TEXT BOX
+  ============================================================
+*/
+
+/*
+  Initial state:
+  blank + disabled + readonly appearance
+*/
+:host ::ng-deep .contact-panel input[readonly] {
+  cursor: default;
+  color: var(--contact-input-text-color);
+  background: var(
+    --contact-readonly-input-background
+  );
+}
+
+/*
+  Update click-এর পর input editable হলে white background।
+*/
+:host ::ng-deep .contact-panel input:not([readonly]) {
+  color: var(--contact-input-text-color);
+  background: var(
+    --contact-editable-input-background
+  );
+}
+
+/*
+  Shared input border consistency।
+*/
+:host ::ng-deep .contact-panel .custom-input {
+  border-color: var(--contact-input-border-color);
+  font-family: var(--contact-font-family);
+}
+
+/*
+  ============================================================
+  CONTACT DETAILS CARD
+  ============================================================
+*/
+.contact-detail-card {
+  min-height: 96px;
+  box-shadow: var(--contact-detail-card-shadow);
+}
+
+/*
+  ============================================================
+  SMALL SCREEN
+  ============================================================
+*/
+@media (max-width: 640px) {
+  .contact-detail-card {
+    min-height: auto;
+  }
+}

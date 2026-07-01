@@ -32,6 +32,22 @@ export const APP_ROUTES = [
     MenuName: 'About Section',
 
   },
+  {
+    FunctionId: 'U005',
+    FunctionName: 'Contact',
+    routePath: '/contact',
+    ModuleName: 'Management Console',
+    MenuName: 'Contact Section',
+
+  },
+  {
+    FunctionId: 'U006',
+    FunctionName: 'Dashboard',
+    routePath: '/dashboard',
+    ModuleName: 'Management Console',
+    MenuName: 'Dashboard Section',
+
+  },
 
 
 ];

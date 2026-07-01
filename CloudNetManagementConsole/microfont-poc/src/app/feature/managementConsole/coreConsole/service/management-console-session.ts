@@ -307,7 +307,14 @@ export class ManagementConsoleSession {
       return;
     }
 
-    const remainingMilliseconds = tokenExpiry - Date.now();
+    /*
+  Guard যে সময় থেকে token invalid ধরে,
+  auto cleanup-ও সেই সময় থেকেই হবে।
+*/
+const remainingMilliseconds =
+  tokenExpiry -
+  Date.now() -
+  this.expirySafetyWindowInMilliseconds;
 
     /*
       App start হওয়ার আগেই token expire হয়ে গেলে

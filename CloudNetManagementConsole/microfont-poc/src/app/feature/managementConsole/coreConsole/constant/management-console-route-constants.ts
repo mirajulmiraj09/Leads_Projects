@@ -9,6 +9,7 @@ export const MANAGEMENT_CONSOLE_ABSOLUTE_ROUTES = {
 
   userCreation: `/${MANAGEMENT_CONSOLE_ROUTE_BASE_PATH}/user-creation`,
   about:`/${MANAGEMENT_CONSOLE_ROUTE_BASE_PATH}/about`,
+  contact:`/${MANAGEMENT_CONSOLE_ROUTE_BASE_PATH}/contact`,
 
   /*
     Management Console login fail হলে এখানে redirect হবে।

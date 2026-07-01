@@ -35,26 +35,26 @@ import {
 import { LoaderService } from '../../../../shared/services/loader.service';
 
 import { MANAGEMENT_CONSOLE_ABSOLUTE_ROUTES } from '../../coreConsole/constant/management-console-route-constants';
-import { AboutInformation } from '../../coreConsole/model/about-information.types';
-import { AboutUpdateRequest } from '../../coreConsole/model/about-update-request.types';
-import { ManagementConsoleAboutApi } from '../../coreConsole/service/management-console-about-api';
+import { ContactInformation } from '../../coreConsole/model/contact-information.types';
+import { ContactUpdateRequest } from '../../coreConsole/model/contact-update-request.types';
+import { ManagementConsoleContactApi } from '../../coreConsole/service/management-console-contact-api';
 
 /*
   ============================================================
-  About Page
+  Contact Page
   ============================================================
 
-  Page flow:
-  1. Page load → GET About details
-  2. Top edit form empty + disabled থাকবে
-  3. Navbar Update → bottom data top form-এ auto-fill + editable
-  4. Navbar Save → POST editDetail
-  5. Save success → GET details আবার call হবে
-  6. Bottom details updated data দেখাবে
-  7. Form আবার empty + disabled হবে
+  Flow:
+  1. Page open → GET contact details
+  2. Top form → blank + disabled
+  3. Navbar Update → bottom details auto-fill + editable
+  4. Navbar Save → editContactDetails API call
+  5. Save success → GET API আবার call
+  6. Bottom details refreshed
+  7. Top form আবার blank + disabled
 */
 @Component({
-  selector: 'management-console-about',
+  selector: 'management-console-contact',
   standalone: true,
   imports: [
     ReactiveFormsModule,
@@ -62,15 +62,15 @@ import { ManagementConsoleAboutApi } from '../../coreConsole/service/management-
     InputTextBox,
     ExpansionPanelHeader,
   ],
-  templateUrl: './about.html',
-  styleUrl: './about.scss',
+  templateUrl: './contact.html',
+  styleUrl: './contact.scss',
 })
-export class About implements OnInit, OnDestroy {
+export class Contact implements OnInit, OnDestroy {
   private readonly formBuilder = inject(FormBuilder);
   private readonly router = inject(Router);
 
-  private readonly aboutApi = inject(
-    ManagementConsoleAboutApi,
+  private readonly contactApi = inject(
+    ManagementConsoleContactApi,
   );
 
   private readonly loaderService = inject(
@@ -82,8 +82,8 @@ export class About implements OnInit, OnDestroy {
     EXPANSION PANEL STATE
     ============================================================
   */
-  readonly aboutInformationPanelOpen = signal(true);
-  readonly aboutDetailsPanelOpen = signal(true);
+  readonly contactInformationPanelOpen = signal(true);
+  readonly contactDetailsPanelOpen = signal(true);
 
   /*
     ============================================================
@@ -97,45 +97,33 @@ export class About implements OnInit, OnDestroy {
   readonly errorMessage = signal('');
 
   /*
-    Bottom "About Details" area-তে API data থাকবে।
+    নিচের Contact Details section-এর API data।
   */
-  readonly aboutInformation =
-    signal<AboutInformation | null>(null);
+  readonly contactInformation =
+    signal<ContactInformation | null>(null);
 
   /*
     ============================================================
     EDIT FORM
-    ------------------------------------------------------------
-    Page open হলে:
-    - blank থাকবে
-    - disabled থাকবে
-
-    Update click হলে:
-    - bottom details দিয়ে auto-fill হবে
-    - enabled হবে
     ============================================================
+
+    Important:
+    contactEmailAddress API value plain email নাও হতে পারে।
+
+    Example:
+    "shadhin.care@jamunabank.com.bd or JBPLC 24/7 call center 16742"
+
+    তাই এখানে Validators.email ব্যবহার করা হয়নি।
+    নাহলে valid backend value হলেও Save button invalid হয়ে যেত।
   */
-  readonly aboutForm =
+  readonly contactForm =
     this.formBuilder.nonNullable.group({
-      internationalNumber: [
+      callCenterHotlineNumber: [
         '',
         [Validators.required],
       ],
 
-      localNumber: [
-        '',
-        [Validators.required],
-      ],
-
-      mailAddress: [
-        '',
-        [
-          Validators.required,
-          Validators.email,
-        ],
-      ],
-
-      officeAddress: [
+      emailAddress: [
         '',
         [Validators.required],
       ],
@@ -147,11 +135,10 @@ export class About implements OnInit, OnDestroy {
       NAVBAR BUTTON LISTENER
       ==========================================================
 
-      Existing Microfont POC button component:
-      Update click → ONCLICK_UPDATE true
-      Save click   → ONCLICK_SAVE true
-      Reset click  → ONCLICK_RESET true
-      Exit click   → ONCLICK_EXIT true
+      Update click → edit mode
+      Save click   → edit API call
+      Reset click  → blank + disabled state
+      Exit click   → Console home
     */
     effect(() => {
       if (ONCLICK_UPDATE()) {
@@ -161,7 +148,7 @@ export class About implements OnInit, OnDestroy {
 
       if (ONCLICK_SAVE()) {
         ONCLICK_SAVE.set(false);
-        this.saveAboutDetails();
+        this.saveContactDetails();
       }
 
       if (ONCLICK_RESET()) {
@@ -178,29 +165,26 @@ export class About implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     /*
-      Navbar Save/Update button যেন এই form-এর
-      valid/invalid state জানতে পারে।
+      Existing navbar Save button যেন form valid/invalid state জানে।
     */
-    FormGroupSignal.set(this.aboutForm);
+    FormGroupSignal.set(this.contactForm);
 
     /*
       Initial state:
-      blank + disabled form
-      Update / Reset / Exit button visible
+      - top input empty + disabled
+      - Update / Reset navbar button visible
     */
     this.resetEditForm();
-    this.configureViewModeButtons();
 
     /*
-      Page opening API call.
+      Page open GET API call।
     */
-    this.loadAboutDetails();
+    this.loadContactDetails();
   }
 
   ngOnDestroy(): void {
     /*
-      অন্য page-এ গেলে About page-এর button configuration
-      navbar-এ যেন পড়ে না থাকে।
+      Contact page-specific navbar configuration clear করা।
     */
     ButtonUtils.resetAllButtons();
     ButtonUtils.resetAllClickSignals();
@@ -213,65 +197,50 @@ export class About implements OnInit, OnDestroy {
   */
 
   /*
-    Initial state:
-    Update click করলে form auto-fill হবে।
+    View mode:
+    top form blank + disabled
   */
   private configureViewModeButtons(): void {
     ButtonUtils.resetAllButtons();
     ButtonUtils.resetAllClickSignals();
 
-    FormGroupSignal.set(this.aboutForm);
+    FormGroupSignal.set(this.contactForm);
 
     ButtonUtils.setPageButtons({
-      save: false,
-      saveNext: false,
-
       update: true,
-      updateNext: false,
-
-      view: false,
-      delete: false,
-
       reset: true,
-      exit: false,
 
-      customAction: false,
+      /*
+        Exit চাইলে true করো।
+        এখন About screenshot-এর মতো false রাখা হলো।
+      */
+      exit: false,
     });
   }
 
   /*
-    Update click করার পর:
-    Save / Reset / Exit show হবে।
+    Edit mode:
+    Save + Reset visible
   */
   private configureEditModeButtons(): void {
     ButtonUtils.resetAllButtons();
     ButtonUtils.resetAllClickSignals();
 
-    FormGroupSignal.set(this.aboutForm);
+    FormGroupSignal.set(this.contactForm);
 
     ButtonUtils.setPageButtons({
       save: true,
-      saveNext: false,
-
-      update: false,
-      updateNext: false,
-
-      view: false,
-      delete: false,
-
       reset: true,
       exit: false,
-
-      customAction: false,
     });
   }
 
   /*
     ============================================================
-    GET ABOUT DETAILS
+    LOAD CONTACT DETAILS
     ============================================================
   */
-  loadAboutDetails(): void {
+  loadContactDetails(): void {
     if (this.loading()) {
       return;
     }
@@ -281,8 +250,8 @@ export class About implements OnInit, OnDestroy {
 
     this.loaderService.show();
 
-    this.aboutApi
-      .getAboutDetails()
+    this.contactApi
+      .getContactDetails()
       .pipe(
         finalize(() => {
           this.loading.set(false);
@@ -290,22 +259,22 @@ export class About implements OnInit, OnDestroy {
         }),
       )
       .subscribe({
-        next: (aboutInformation) => {
-          this.aboutInformation.set(
-            aboutInformation,
+        next: (contactInformation) => {
+          this.contactInformation.set(
+            contactInformation,
           );
         },
 
         error: (error: unknown) => {
           console.error(
-            '[About GET Error]',
+            '[Contact GET Error]',
             error,
           );
 
           this.errorMessage.set(
             this.getErrorMessage(
               error,
-              'Unable to load About information.',
+              'Unable to load Contact information.',
             ),
           );
         },
@@ -314,17 +283,17 @@ export class About implements OnInit, OnDestroy {
 
   /*
     ============================================================
-    UPDATE BUTTON
+    UPDATE
     ------------------------------------------------------------
-    Bottom details → top form auto-fill + editable
+    Bottom details → top fields auto-fill + editable
     ============================================================
   */
   private startEdit(): void {
-    const details = this.aboutInformation();
+    const details = this.contactInformation();
 
     if (!details) {
       this.errorMessage.set(
-        'About details are not available yet.',
+        'Contact details are not available yet.',
       );
 
       return;
@@ -337,26 +306,20 @@ export class About implements OnInit, OnDestroy {
     this.errorMessage.set('');
     this.submitted.set(false);
 
-    this.aboutForm.patchValue(
+    this.contactForm.patchValue(
       {
-        internationalNumber:
-          details.internationalNumber,
+        callCenterHotlineNumber:
+          details.callCenterHotlineNumber,
 
-        localNumber:
-          details.localNumber,
-
-        mailAddress:
-          details.mailAddress,
-
-        officeAddress:
-          details.officeAddress,
+        emailAddress:
+          details.emailAddress,
       },
       {
         emitEvent: false,
       },
     );
 
-    this.aboutForm.enable({
+    this.contactForm.enable({
       emitEvent: false,
     });
 
@@ -367,53 +330,41 @@ export class About implements OnInit, OnDestroy {
 
   /*
     ============================================================
-    SAVE BUTTON
+    SAVE
     ============================================================
   */
-  private saveAboutDetails(): void {
+  private saveContactDetails(): void {
     if (!this.isEditMode()) {
-      return;
-    }
-
-    const currentDetails = this.aboutInformation();
-
-    if (!currentDetails) {
-      this.errorMessage.set(
-        'About details are not available yet.',
-      );
-
       return;
     }
 
     this.submitted.set(true);
     this.errorMessage.set('');
 
-    if (this.aboutForm.invalid) {
-      this.aboutForm.markAllAsTouched();
+    if (this.contactForm.invalid) {
+      this.contactForm.markAllAsTouched();
 
       this.errorMessage.set(
-        'Please correct the required fields before saving.',
+        'Please complete all required fields before saving.',
       );
 
       return;
     }
 
-    const payload = this.createUpdatePayload(
-      currentDetails.aboutId,
-    );
+    const payload = this.createUpdatePayload();
 
     this.loading.set(true);
     this.loaderService.show();
 
     /*
-      Save success হলে সঙ্গে সঙ্গে GET API call হবে।
-      এতে bottom About Details সর্বশেষ backend data দেখাবে।
+      Edit API success হলে আবার GET API call হবে।
+      এতে নিচের Contact Details latest backend data দেখাবে।
     */
-    this.aboutApi
-      .updateAboutDetails(payload)
+    this.contactApi
+      .updateContactDetails(payload)
       .pipe(
         switchMap(() =>
-          this.aboutApi.getAboutDetails(),
+          this.contactApi.getContactDetails(),
         ),
 
         finalize(() => {
@@ -423,38 +374,36 @@ export class About implements OnInit, OnDestroy {
       )
       .subscribe({
         next: (updatedDetails) => {
-          this.aboutInformation.set(
+          this.contactInformation.set(
             updatedDetails,
           );
 
           /*
             Successful save-এর পর:
-            - top form blank
-            - fields disabled
+            - top form clear
+            - form disabled
             - navbar আবার Update mode
           */
           this.resetEditForm();
-          this.configureViewModeButtons();
         },
 
         error: (error: unknown) => {
           console.error(
-            '[About Save Error]',
+            '[Contact Save Error]',
             error,
           );
 
           /*
-            FAILED response যেমন:
+            Example:
             "Only Head office users are allowed for this feature."
-            এখানে show হবে।
 
-            Error হলে form editable-ই থাকবে,
-            তাই user data হারাবে না।
+            Save fail হলে form editable থাকবে,
+            তাই user input হারাবে না।
           */
           this.errorMessage.set(
             this.getErrorMessage(
               error,
-              'Unable to update About information.',
+              'Unable to update Contact information.',
             ),
           );
         },
@@ -463,29 +412,24 @@ export class About implements OnInit, OnDestroy {
 
   /*
     ============================================================
-    RESET BUTTON
-    ------------------------------------------------------------
-    Edit data clear করে আবার blank + disabled state-এ যাবে।
-    Bottom details unchanged থাকবে।
+    RESET
     ============================================================
   */
   private resetEditForm(): void {
     this.submitted.set(false);
     this.isEditMode.set(false);
 
-    this.aboutForm.reset(
+    this.contactForm.reset(
       {
-        internationalNumber: '',
-        localNumber: '',
-        mailAddress: '',
-        officeAddress: '',
+        callCenterHotlineNumber: '',
+        emailAddress: '',
       },
       {
         emitEvent: false,
       },
     );
 
-    this.aboutForm.disable({
+    this.contactForm.disable({
       emitEvent: false,
     });
 
@@ -497,30 +441,19 @@ export class About implements OnInit, OnDestroy {
     PAYLOAD MAPPING
     ============================================================
   */
-  private createUpdatePayload(
-    aboutId: number,
-  ): AboutUpdateRequest {
+  private createUpdatePayload(): ContactUpdateRequest {
     const formValue =
-      this.aboutForm.getRawValue();
+      this.contactForm.getRawValue();
 
     return {
-      aboutId,
-
       /*
-        Backend field name:
-        international
+        Backend field names GET Result-এর মতো রাখা হলো।
       */
-      international:
-        formValue.internationalNumber.trim(),
+      callCenterHotLine:
+        formValue.callCenterHotlineNumber.trim(),
 
-      localNumber:
-        formValue.localNumber.trim(),
-
-      mailAddress:
-        formValue.mailAddress.trim(),
-
-      officeAddress:
-        formValue.officeAddress.trim(),
+      contactEmailAddress:
+        formValue.emailAddress.trim(),
     };
   }
 
@@ -537,7 +470,7 @@ export class About implements OnInit, OnDestroy {
 
   /*
     ============================================================
-    ERROR HELPER
+    ERROR MESSAGE HELPER
     ============================================================
   */
   private getErrorMessage(
